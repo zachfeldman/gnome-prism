@@ -1,0 +1,385 @@
+/* gnome-prism GTK3 baseline theme.
+ * Design tokens:
+ * - fd-bg: #000000
+ * - fd-stroke: #BDA7F0
+ * - highlight: #FF7447
+ */
+
+@define-color fp_bg #000000;
+@define-color fp_surface #191919;
+@define-color fp_stroke #BDA7F0;
+@define-color fp_highlight #FF7447;
+
+@define-color theme_bg_color @fp_bg;
+@define-color theme_fg_color @fp_stroke;
+@define-color theme_selected_bg_color @fp_stroke;
+@define-color theme_selected_fg_color @fp_bg;
+@define-color theme_text_color @fp_stroke;
+@define-color theme_base_color @fp_bg;
+@define-color borders @fp_stroke;
+
+window,
+dialog,
+.background {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+}
+
+headerbar,
+.titlebar,
+toolbar {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  box-shadow: none;
+}
+
+button,
+.button {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+button:hover,
+.button:hover {
+  background-color: @fp_surface;
+  color: @fp_stroke;
+}
+
+button:active,
+button:checked,
+.button:active,
+.button:checked {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+entry,
+textview,
+text,
+spinbutton {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  border-radius: 0;
+  caret-color: @fp_highlight;
+}
+
+selection {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+progressbar progress {
+  background-color: @fp_highlight;
+}
+
+link,
+label link {
+  color: @fp_highlight;
+}
+
+/* App menubar/menu typography and spacing (Sublime, GTK apps).
+ * Use descendant selectors (window menubar) instead of bare element
+ * selectors — Chrome extracts font-family from bare menubar/menu
+ * rules and bleeds it into web-page content. */
+window menubar,
+window menu,
+window menuitem,
+window menu > menuitem,
+window menubar > menuitem {
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+}
+
+menubar {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-top: 1px solid @fp_stroke;
+  border-bottom: 1px solid @fp_stroke;
+  padding: 2px 4px;
+}
+
+menubar > menuitem {
+  color: @fp_stroke;
+  padding: 3px 8px;
+  margin: 0 3px;
+  border-radius: 0;
+  background-image: none;
+}
+
+menubar > menuitem:hover,
+menubar > menuitem:focus {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+menu {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  border-radius: 0;
+}
+
+menu > menuitem {
+  padding: 4px 10px;
+  margin: 1px 0;
+  border-radius: 0;
+}
+
+menu > menuitem:hover,
+menu > menuitem:focus {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+/* Dialog/error surfaces (including crash prompts) */
+messagedialog,
+dialog.message,
+.message-dialog,
+dialog .dialog-vbox,
+dialog .content-area {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-color: @fp_stroke;
+}
+
+messagedialog label,
+dialog.message label,
+.message-dialog label {
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+  color: @fp_stroke;
+}
+
+dialog .dialog-action-area,
+.message-dialog .dialog-action-area,
+messagedialog .dialog-action-area {
+  border-top: 1px solid @fp_stroke;
+  padding: 0;
+  background-color: @fp_bg;
+}
+
+dialog .dialog-action-area button,
+.message-dialog .dialog-action-area button,
+messagedialog .dialog-action-area button {
+  margin: 0;
+  border-radius: 0;
+}
+
+/* Shared desktop app titlebar typography/spacing (Tilix, Sublime, etc.). */
+headerbar,
+.titlebar,
+.default-decoration {
+  min-height: 30px;
+  padding: 3px 0;
+  border-width: 1px;
+}
+
+headerbar button,
+.titlebar button {
+  min-height: 24px;
+  min-width: 20px;
+  padding: 2px 6px;
+}
+
+/* Keep the close button inset from the window edge like neighboring controls. */
+headerbar .titlebutton.close,
+.titlebar .titlebutton.close,
+.default-decoration .titlebutton.close,
+headerbar button.titlebutton.close,
+.titlebar button.titlebutton.close {
+  margin-right: 6px;
+}
+
+headerbar label,
+.titlebar label,
+headerbar .title,
+.titlebar .title,
+headerbar .subtitle,
+.titlebar .subtitle {
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+  font-weight: 600;
+}
+
+/* Generic notebook (tabbed pane) styling — covers preferences dialogs,
+ * settings panels, and any GTK notebook not matched by app-specific rules. */
+notebook > header {
+  background-color: @fp_bg;
+  border: 1px solid @fp_stroke;
+  box-shadow: none;
+}
+
+notebook > header > tabs > tab {
+  padding: 4px 10px;
+  margin: 0 2px;
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  border-radius: 0;
+  box-shadow: none;
+  background-image: none;
+}
+
+notebook > header > tabs > tab:hover {
+  background-color: @fp_surface;
+}
+
+notebook > header > tabs > tab:checked {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-color: @fp_stroke;
+  font-weight: 600;
+}
+
+/* Treeview and list rows — file dialogs, sidebars, column headers. */
+treeview,
+.view {
+  padding: 2px 4px;
+}
+
+treeview header button,
+.view header button {
+  padding: 4px 8px;
+}
+
+row,
+list row,
+.sidebar row {
+  padding: 3px 6px;
+}
+
+.sidebar {
+  padding: 2px 0;
+}
+
+placessidebar row,
+placessidebar row label {
+  padding: 3px 6px;
+}
+
+/* Scrollbar — visible trough and thumb against dark backgrounds. */
+scrollbar {
+  background-color: @fp_bg;
+}
+
+scrollbar slider {
+  background-color: @fp_stroke;
+  min-width: 8px;
+  min-height: 8px;
+  border-radius: 0;
+}
+
+scrollbar slider:hover {
+  background-color: @fp_highlight;
+}
+
+scrollbar trough {
+  background-color: @fp_surface;
+}
+
+/* Keep Tilix tab strip aligned to the same vertical rhythm. */
+notebook.tilix-background > header,
+window.tilix notebook > header {
+  min-height: 30px;
+  padding: 3px 0;
+  background-color: @fp_bg;
+  border: 1px solid @fp_stroke;
+  box-shadow: none;
+}
+
+notebook.tilix-background > header > tabs > tab,
+window.tilix notebook > header > tabs > tab {
+  margin: 0;
+  padding: 4px 10px;
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  border-bottom: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background-image: none;
+}
+
+notebook.tilix-background > header > tabs > tab:hover,
+window.tilix notebook > header > tabs > tab:hover {
+  background-color: @fp_surface;
+  color: @fp_stroke;
+  box-shadow: none;
+}
+
+notebook.tilix-background > header > tabs > tab:checked,
+window.tilix notebook > header > tabs > tab:checked {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-color: @fp_stroke;
+  box-shadow: none;
+}
+
+notebook.tilix-background > header > tabs > tab:checked label,
+notebook.tilix-background > header > tabs > tab label,
+window.tilix notebook > header > tabs > tab:checked label,
+window.tilix notebook > header > tabs > tab label {
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+  font-weight: 600;
+}
+
+/* Tilix terminal-title row uses app-specific classes, not notebook tabs. */
+.terminal-titlebar,
+window.tilix .terminal-titlebar {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-top: 1px solid @fp_stroke;
+  border-bottom: 1px solid @fp_stroke;
+  padding: 3px 2px;
+}
+
+.terminal-titlebar box {
+  padding-top: 2px;
+  padding-bottom: 2px;
+}
+
+.terminal-titlebar > button,
+window.tilix .terminal-titlebar > button {
+  min-height: 24px;
+  min-width: 20px;
+  padding: 2px 8px;
+  border: 1px solid @fp_stroke;
+  border-radius: 0;
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  box-shadow: none;
+}
+
+.terminal-titlebar > button:last-child,
+window.tilix .terminal-titlebar > button:last-child {
+  margin-right: 6px;
+}
+
+.terminal-titlebar > button:hover,
+window.tilix .terminal-titlebar > button:hover {
+  background-color: @fp_surface;
+  color: @fp_stroke;
+}
+
+.terminal-titlebar > button:checked,
+.terminal-titlebar > button:active,
+window.tilix .terminal-titlebar > button:checked,
+window.tilix .terminal-titlebar > button:active {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+.terminal-titlebar label,
+.terminal-titlebar .title,
+.terminal-titlebar .subtitle,
+label.tilix-terminal-title,
+window.tilix .terminal-titlebar label,
+window.tilix .terminal-titlebar .title,
+window.tilix .terminal-titlebar .subtitle {
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+  font-weight: 600;
+  padding-top: 2px;
+  padding-bottom: 2px;
+}

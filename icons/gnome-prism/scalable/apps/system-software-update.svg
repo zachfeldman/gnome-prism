@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Shield -->
+    <path d="M64 14 L104 32 V68 C104 88, 88 104, 64 114 C40 104, 24 88, 24 68 V32 Z"/>
+    <!-- Download arrow -->
+    <line x1="64" y1="44" x2="64" y2="80"/>
+    <path d="M50 68 L64 82 L78 68"/>
+    <!-- Base line -->
+    <line x1="44" y1="92" x2="84" y2="92"/>
+  </g>
+</svg>

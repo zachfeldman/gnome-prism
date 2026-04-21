@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Headphones -->
+    <path d="M24 72 V64 C24 42, 42 22, 64 22 C86 22, 104 42, 104 64 V72"/>
+    <!-- Left ear cup -->
+    <rect x="16" y="72" width="18" height="32" rx="6"/>
+    <!-- Right ear cup -->
+    <rect x="94" y="72" width="18" height="32" rx="6"/>
+    <!-- Waveform between cups -->
+    <line x1="46" y1="78" x2="46" y2="96"/>
+    <line x1="54" y1="72" x2="54" y2="102"/>
+    <line x1="62" y1="80" x2="62" y2="94"/>
+    <line x1="70" y1="70" x2="70" y2="104"/>
+    <line x1="78" y1="76" x2="78" y2="98"/>
+  </g>
+</svg>

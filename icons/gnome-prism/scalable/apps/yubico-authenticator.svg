@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Shackle (arch) -->
+    <path d="M42 52V40C42 27 52 16 64 16C76 16 86 27 86 40V52"/>
+    <!-- Lock body -->
+    <rect x="28" y="52" width="72" height="60" rx="10"/>
+    <!-- Keyhole circle -->
+    <circle cx="64" cy="76" r="10"/>
+    <!-- Keyhole slot -->
+    <path d="M64 86V98"/>
+  </g>
+</svg>

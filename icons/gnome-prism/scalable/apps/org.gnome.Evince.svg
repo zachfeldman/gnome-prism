@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Document page -->
+    <path d="M30 14 H82 L98 30 V114 H30 V14Z"/>
+    <!-- Corner fold -->
+    <path d="M82 14 V30 H98"/>
+    <!-- Text lines -->
+    <line x1="44" y1="50" x2="84" y2="50"/>
+    <line x1="44" y1="66" x2="84" y2="66"/>
+    <line x1="44" y1="82" x2="70" y2="82"/>
+  </g>
+</svg>

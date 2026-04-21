@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Monitor -->
+    <rect x="14" y="18" width="100" height="72" rx="6"/>
+    <!-- Screen content - arrow -->
+    <path d="M54 44 L74 54 L54 64"/>
+    <!-- Stand -->
+    <line x1="64" y1="90" x2="64" y2="104"/>
+    <line x1="40" y1="104" x2="88" y2="104"/>
+    <!-- Connection indicator -->
+    <circle cx="98" cy="30" r="4" fill="var(--fill-0, #BDA7F0)"/>
+  </g>
+</svg>

@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Document icon -->
+    <path d="M30 14 H82 L98 30 V114 H30 V14Z"/>
+    <path d="M82 14 V30 H98"/>
+    <!-- Pen/quill overlay -->
+    <path d="M60 90 L88 50 L94 56 L66 96 Z" fill="var(--fill-0, #BDA7F0)"/>
+  </g>
+</svg>

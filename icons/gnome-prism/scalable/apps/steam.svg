@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Game controller body -->
+    <path d="M20 58 C20 46, 28 38, 40 38 H88 C100 38, 108 46, 108 58 C108 66, 104 74, 98 80 L84 96 H44 L30 80 C24 74, 20 66, 20 58Z"/>
+    <!-- D-pad -->
+    <line x1="46" y1="54" x2="46" y2="70"/>
+    <line x1="38" y1="62" x2="54" y2="62"/>
+    <!-- Buttons -->
+    <circle cx="80" cy="54" r="5" fill="var(--fill-0, #BDA7F0)"/>
+    <circle cx="90" cy="62" r="5" fill="var(--fill-0, #BDA7F0)"/>
+    <circle cx="80" cy="70" r="5" fill="var(--fill-0, #BDA7F0)"/>
+    <circle cx="70" cy="62" r="5" fill="var(--fill-0, #BDA7F0)"/>
+  </g>
+</svg>

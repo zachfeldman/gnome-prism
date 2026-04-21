@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Large A -->
+    <path d="M22 104 L52 24 L82 104"/>
+    <line x1="32" y1="78" x2="72" y2="78"/>
+    <!-- Small a -->
+    <path d="M88 72 C88 62, 96 58, 102 58 C108 58, 114 62, 114 72 V104"/>
+    <path d="M114 82 C114 74, 108 70, 102 70 C96 70, 88 74, 88 82 C88 92, 96 96, 102 96 C108 96, 114 92, 114 82"/>
+  </g>
+</svg>

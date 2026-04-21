@@ -1,0 +1,43 @@
+/* gnome-prism optional content overrides for built-in Firefox pages
+ * Applies to about:newtab, about:home, and internal newtab surfaces.
+ */
+
+:root {
+  --fp-bg: #000000 !important;
+  --fp-surface: #08080c !important;
+  --fp-stroke: #bda7f0 !important;
+  --fp-text: #bda7f0 !important;
+  --fp-text-strong: #e3d9ff !important;
+}
+
+body,
+html,
+.outer-wrapper,
+.activity-stream,
+.discovery-stream.ds-layout {
+  background: var(--fp-bg) !important;
+  color: var(--fp-text) !important;
+}
+
+.top-site-outer .tile,
+.top-site-outer .tile .icon-wrapper,
+.ds-card,
+.card,
+.context-menu,
+.search-wrapper input {
+  background: var(--fp-surface) !important;
+  color: var(--fp-text) !important;
+  border: 1px solid var(--fp-stroke) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.top-site-outer .title,
+.top-site-outer .sponsored-label,
+.ds-card .title,
+.ds-card .excerpt,
+.section-title span,
+.search-handoff-button,
+.search-inner-wrapper input {
+  color: var(--fp-text) !important;
+}

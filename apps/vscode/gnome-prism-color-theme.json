@@ -1,0 +1,44 @@
+{
+  "$schema": "vscode://schemas/color-theme",
+  "name": "gnome-prism",
+  "type": "dark",
+  "colors": {
+    "editor.background": "#000000",
+    "editor.foreground": "#BDA7F0",
+    "activityBar.background": "#000000",
+    "activityBar.foreground": "#BDA7F0",
+    "sideBar.background": "#000000",
+    "sideBar.foreground": "#BDA7F0",
+    "statusBar.background": "#000000",
+    "statusBar.foreground": "#BDA7F0",
+    "focusBorder": "#FF7447",
+    "textLink.foreground": "#FF7447"
+  },
+  "tokenColors": [
+    {
+      "scope": [
+        "comment"
+      ],
+      "settings": {
+        "foreground": "#8D7FBA"
+      }
+    },
+    {
+      "scope": [
+        "keyword",
+        "storage"
+      ],
+      "settings": {
+        "foreground": "#FF7447"
+      }
+    },
+    {
+      "scope": [
+        "string"
+      ],
+      "settings": {
+        "foreground": "#BDA7F0"
+      }
+    }
+  ]
+}

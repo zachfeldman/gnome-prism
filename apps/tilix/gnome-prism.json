@@ -1,0 +1,25 @@
+{
+  "name": "gnome-prism",
+  "comment": "gnome-prism palette for Tilix",
+  "use-theme-colors": false,
+  "foreground-color": "#BDA7F0",
+  "background-color": "#000000",
+  "palette": [
+    "#000000",
+    "#FF7447",
+    "#7EC9A0",
+    "#FFCC66",
+    "#A8C4FF",
+    "#BDA7F0",
+    "#89DDFF",
+    "#E3D9FF",
+    "#555555",
+    "#FF8F6B",
+    "#A0DBB8",
+    "#FFD999",
+    "#C0D4FF",
+    "#CAB8F5",
+    "#B0E8FF",
+    "#F5F0FF"
+  ]
+}

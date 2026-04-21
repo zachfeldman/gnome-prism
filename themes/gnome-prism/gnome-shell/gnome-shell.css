@@ -1,0 +1,781 @@
+/* gnome-prism GNOME Shell baseline theme.
+ * Design tokens:
+ * - fd-bg: #000000
+ * - fd-stroke: #BDA7F0
+ * - highlight: #FF7447
+ */
+
+stage {
+  font-family: "DM Mono";
+  color: #bda7f0;
+}
+
+#panel {
+  height: 32px;
+  background-color: #000000;
+  color: #bda7f0;
+  border: none;
+  border-bottom: 1px solid #bda7f0;
+  box-shadow: none;
+}
+
+#panel .panel-button {
+  margin: 0;
+  padding: 0 8px;
+  color: #bda7f0;
+  border: none;
+  border-radius: 0;
+}
+
+#panel .panel-button:hover,
+#panel .panel-button:focus,
+#panel .panel-button:active,
+#panel .panel-button:checked {
+  background-color: #191919;
+  color: #bda7f0;
+}
+
+.popup-menu-content,
+.quick-settings,
+.quick-menu,
+.calendar,
+.message-list,
+.notification-banner {
+  background-color: #000000;
+  color: #bda7f0;
+  border: 1px solid #bda7f0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.notification,
+.notification *,
+.notification StLabel,
+.notification-banner,
+.notification-banner *,
+.notification-banner StLabel,
+.notification-banner .message-title,
+.notification-banner .message-body,
+.notification-banner .url-highlighter,
+.notification-banner .message-title StLabel,
+.notification-banner .message-body StLabel {
+  font-size: 14px;
+  font-family: "DM Mono";
+}
+
+/* Notification banner action buttons (e.g. "Snooze", "Join", "Settings") */
+.notification-banner .notification-button {
+  background-color: #000000;
+  color: #bda7f0;
+  border: none;
+  border-top: 1px solid #bda7f0;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: "Noto Sans Mono";
+}
+
+.notification-banner .notification-button:hover,
+.notification-banner .notification-button:focus {
+  background-color: #191919;
+  color: #bda7f0;
+}
+
+.notification-banner .notification-button:active {
+  background-color: #bda7f0;
+  color: #000000;
+}
+
+/* Date menu panel (calendar + notifications) */
+#calendarArea,
+#calendarArea .calendar,
+#calendarArea .message-list,
+#calendarArea .message-list-sections,
+#calendarArea .datemenu-today-button,
+#calendarArea .events-button,
+#calendarArea .world-clocks-button {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border-color: #bda7f0 !important;
+  box-shadow: none !important;
+}
+
+#calendarArea .calendar {
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+
+#calendarArea .calendar .calendar-month-header {
+  border: 0 !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+}
+
+#calendarArea .datemenu-today-button .date-label,
+#calendarArea .calendar .calendar-month-label,
+#calendarArea .calendar .calendar-day-heading,
+#calendarArea .calendar .calendar-day,
+#calendarArea .events-button .events-title,
+#calendarArea .world-clocks-button .world-clocks-header,
+#calendarArea .message-list .message-list-controls {
+  color: #bda7f0 !important;
+  font-family: "Noto Sans Mono" !important;
+}
+
+#calendarArea .calendar .calendar-month-label,
+#calendarArea .calendar .calendar-day-heading,
+#calendarArea .calendar .calendar-day {
+  background-color: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+#calendarArea .calendar .calendar-month-header .pager-button,
+#calendarArea .events-button,
+#calendarArea .world-clocks-button,
+#calendarArea .message-list .button {
+  background-color: transparent !important;
+  color: #bda7f0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+#calendarArea .datemenu-today-button {
+  border: 0 !important;
+}
+
+#calendarArea .calendar .calendar-day:selected,
+#calendarArea .calendar .calendar-day:active,
+#calendarArea .calendar .calendar-day:focus {
+  background-color: #bda7f0 !important;
+  color: #000000 !important;
+  border-radius: 0 !important;
+}
+
+#calendarArea .calendar .calendar-day:hover,
+#calendarArea .calendar .calendar-day-heading:hover {
+  background-color: #191919 !important;
+  color: #bda7f0 !important;
+  border-radius: 0 !important;
+}
+
+#calendarArea .message-list .message,
+#calendarArea .message-list .message-content,
+#calendarArea .message-list .message-header,
+#calendarArea .message-list .message-body,
+#calendarArea .message-list .message-media-control,
+#calendarArea .message-notification-group {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+#calendarArea .message-list .message,
+#calendarArea .message-notification-group {
+  border: 1px solid #bda7f0 !important;
+}
+
+#calendarArea .message-list .message-content,
+#calendarArea .message-list .message-header,
+#calendarArea .message-list .message-body,
+#calendarArea .message-list .message-media-control {
+  border: 0 !important;
+  outline: 0 !important;
+}
+
+#calendarArea .message-list .message .message-title,
+#calendarArea .message-list .message .message-body,
+#calendarArea .message-list .message .event-time {
+  color: #bda7f0 !important;
+  font-family: "Noto Sans Mono" !important;
+}
+
+#calendarArea .message-list .message .message-close-button,
+#calendarArea .message-list .message-notification-group .message-collapse-button {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border: 1px solid #bda7f0 !important;
+  border-radius: 0 !important;
+}
+
+#calendarArea .message-list .button:hover,
+#calendarArea .calendar .calendar-month-header .pager-button:hover,
+#calendarArea .message-list .message .message-close-button:hover,
+#calendarArea .message-list .message-notification-group .message-collapse-button:hover {
+  background-color: #191919 !important;
+  color: #bda7f0 !important;
+}
+
+/* Shell auth/prompt dialogs (keyring, policykit, unlock prompts). */
+.modal-dialog,
+.prompt-dialog,
+.prompt-dialog-main-layout {
+  background-color: #000000;
+  color: #bda7f0;
+  border: 1px solid #bda7f0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.prompt-dialog,
+.prompt-dialog *,
+.modal-dialog,
+.modal-dialog * {
+  font-family: "Noto Sans Mono" !important;
+}
+
+.prompt-dialog-headline,
+.prompt-dialog-description,
+.prompt-dialog .message-dialog-title,
+.prompt-dialog .message-dialog-description {
+  color: #bda7f0 !important;
+  font-family: "Noto Sans Mono" !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+}
+
+.prompt-dialog .entry,
+.prompt-dialog-password-entry {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border: 1px solid #ff7447 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  caret-color: #ff7447 !important;
+  font-family: "Noto Sans Mono" !important;
+}
+
+.prompt-dialog .entry:focus,
+.prompt-dialog-password-entry:focus {
+  border: 1px solid #ff7447 !important;
+  box-shadow: none !important;
+}
+
+.prompt-dialog .button,
+.modal-dialog .button,
+.modal-dialog-linked-button,
+.prompt-dialog .modal-dialog-linked-button {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border: 1px solid #bda7f0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+.prompt-dialog .button StLabel,
+.modal-dialog .button StLabel,
+.modal-dialog-linked-button StLabel {
+  color: #bda7f0 !important;
+  font-family: "Noto Sans Mono" !important;
+  font-weight: 400 !important;
+}
+
+.prompt-dialog .button:hover,
+.modal-dialog .button:hover,
+.modal-dialog-linked-button:hover {
+  background-color: #191919 !important;
+  color: #bda7f0 !important;
+  opacity: 1 !important;
+}
+
+.prompt-dialog .button:active,
+.modal-dialog .button:active,
+.modal-dialog-linked-button:active,
+.prompt-dialog .button:checked,
+.modal-dialog .button:checked,
+.modal-dialog-linked-button:checked {
+  background-color: #bda7f0 !important;
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+
+.prompt-dialog .button:insensitive,
+.modal-dialog .button:insensitive,
+.modal-dialog-linked-button:insensitive {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border: 1px solid #bda7f0 !important;
+  opacity: 1 !important;
+}
+
+/* Override GNOME's specific login-dialog button classes directly. */
+.login-dialog-button.cancel-button,
+.login-dialog-button.switch-user-button,
+.login-dialog-button.login-dialog-auth-menu-button,
+.login-dialog-button.login-dialog-session-list-button,
+.login-dialog-button.web-login-intro-button,
+.flat.login-dialog-button.cancel-button,
+.flat.login-dialog-button.switch-user-button,
+.flat.login-dialog-button.login-dialog-auth-menu-button,
+.flat.login-dialog-button.login-dialog-session-list-button,
+.flat.login-dialog-button.web-login-intro-button {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border: 1px solid #bda7f0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+}
+
+.login-dialog-button.cancel-button StLabel,
+.login-dialog-button.switch-user-button StLabel,
+.login-dialog-button.login-dialog-auth-menu-button StLabel,
+.login-dialog-button.login-dialog-session-list-button StLabel,
+.login-dialog-button.web-login-intro-button StLabel {
+  color: #bda7f0 !important;
+  font-family: "Noto Sans Mono" !important;
+  font-weight: 400 !important;
+}
+
+.login-dialog-button.cancel-button:hover,
+.login-dialog-button.switch-user-button:hover,
+.login-dialog-button.login-dialog-auth-menu-button:hover,
+.login-dialog-button.login-dialog-session-list-button:hover,
+.login-dialog-button.web-login-intro-button:hover {
+  background-color: #191919 !important;
+  color: #bda7f0 !important;
+  opacity: 1 !important;
+}
+
+.login-dialog-button.cancel-button:active,
+.login-dialog-button.switch-user-button:active,
+.login-dialog-button.login-dialog-auth-menu-button:active,
+.login-dialog-button.login-dialog-session-list-button:active,
+.login-dialog-button.web-login-intro-button:active,
+.login-dialog-button.cancel-button:checked,
+.login-dialog-button.switch-user-button:checked,
+.login-dialog-button.login-dialog-auth-menu-button:checked,
+.login-dialog-button.login-dialog-session-list-button:checked,
+.login-dialog-button.web-login-intro-button:checked {
+  background-color: #bda7f0 !important;
+  color: #000000 !important;
+  opacity: 1 !important;
+}
+
+.login-dialog-button.cancel-button:insensitive,
+.login-dialog-button.switch-user-button:insensitive,
+.login-dialog-button.login-dialog-auth-menu-button:insensitive,
+.login-dialog-button.login-dialog-session-list-button:insensitive,
+.login-dialog-button.web-login-intro-button:insensitive {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border: 1px solid #bda7f0 !important;
+  opacity: 1 !important;
+}
+
+/* Match quick settings typography to clock/date mono style. */
+.quick-settings StLabel,
+.quick-settings .quick-toggle .quick-toggle-title,
+.quick-settings .quick-toggle .quick-toggle-subtitle,
+.quick-settings .button StLabel {
+  font-family: "Noto Sans Mono" !important;
+}
+
+.quick-settings .quick-toggle .quick-toggle-title,
+.quick-toggle-menu .header .title {
+  font-family: "Noto Sans Mono" !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+}
+
+.quick-settings .quick-toggle .quick-toggle-subtitle,
+.quick-toggle-menu .header .subtitle {
+  font-family: "Noto Sans Mono" !important;
+  font-weight: 400 !important;
+  letter-spacing: 0 !important;
+}
+
+.popup-menu-item,
+.quick-toggle,
+.quick-menu-toggle,
+.message {
+  border-radius: 0;
+  color: #bda7f0;
+}
+
+.popup-menu-item,
+.popup-menu-item StLabel,
+.popup-menu-item .popup-menu-item-label {
+  font-family: "Noto Sans Mono" !important;
+  color: #bda7f0 !important;
+}
+
+.popup-menu-item:hover,
+.quick-toggle:hover,
+.quick-menu-toggle:hover,
+.message:hover {
+  background-color: #191919;
+}
+
+.popup-menu-item:active,
+.popup-menu-item:selected,
+.quick-toggle:checked,
+.quick-toggle:active {
+  background-color: #bda7f0;
+  color: #000000;
+}
+
+.slider {
+  color: #ff7447;
+}
+
+/* Quick settings should not fall back to mixed white/blue defaults. */
+.quick-settings .icon-button {
+  border: 1px solid #bda7f0;
+  border-radius: 0;
+  background-color: #d0d0d0;
+  color: #202020;
+  box-shadow: none;
+}
+
+.quick-settings .icon-button:hover,
+.quick-settings .icon-button:focus {
+  background-color: #bda7f0;
+  color: #000000;
+}
+
+.quick-toggle {
+  border: 1px solid #bda7f0;
+  border-radius: 0;
+  background-color: #000000;
+  color: #bda7f0;
+}
+
+.quick-toggle:checked,
+.quick-toggle:active {
+  background-color: #bda7f0;
+  color: #000000;
+}
+
+.quick-toggle:insensitive {
+  border-color: #8c8c8c;
+  background-color: #d4d4d4;
+  color: #bda7f0;
+}
+
+.quick-menu-toggle .quick-toggle-arrow {
+  border-left: 1px solid #000000;
+  background-color: #ff7447;
+  color: #ffffff;
+  border-radius: 0;
+}
+
+.quick-menu-toggle .quick-toggle {
+  border-radius: 0;
+}
+
+.quick-toggle-has-menu .quick-toggle-menu-button,
+.quick-toggle-has-menu .quick-toggle-menu-button:hover,
+.quick-toggle-has-menu .quick-toggle-menu-button:focus,
+.quick-toggle-has-menu .quick-toggle-menu-button:active,
+.quick-toggle-has-menu .quick-toggle-menu-button:checked {
+  border-radius: 0;
+}
+
+/* Power/session submenu (shutdown, restart, logout) */
+.quick-settings .quick-toggle-menu,
+.quick-settings .quick-toggle-menu .popup-menu-content,
+.quick-settings .popup-sub-menu,
+.quick-settings .popup-sub-menu .popup-menu-content,
+.quick-settings .popup-menu-content {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border: 1px solid #bda7f0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.quick-settings .quick-toggle-menu .popup-menu-item,
+.quick-settings .popup-sub-menu .popup-menu-item,
+.quick-settings .quick-toggle-menu .button,
+.quick-settings .popup-sub-menu .button {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.quick-settings .quick-toggle-menu .popup-menu-item:hover,
+.quick-settings .popup-sub-menu .popup-menu-item:hover,
+.quick-settings .quick-toggle-menu .button:hover,
+.quick-settings .popup-sub-menu .button:hover {
+  background-color: #191919 !important;
+  color: #bda7f0 !important;
+}
+
+/* Global fallback for Yaru power/session popup selectors */
+.quick-toggle-menu,
+.quick-toggle-menu .popup-menu-content,
+.popup-sub-menu,
+.popup-sub-menu .popup-menu-content,
+.popup-menu-content {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border: 1px solid #bda7f0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.quick-toggle-menu .popup-menu-item,
+.popup-sub-menu .popup-menu-item,
+.popup-menu-item {
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  border-radius: 0 !important;
+}
+
+.quick-toggle-menu .popup-menu-item:hover,
+.popup-sub-menu .popup-menu-item:hover,
+.popup-menu-item:hover,
+.popup-menu-item:selected,
+.popup-menu-item:checked {
+  background-color: #191919 !important;
+  color: #bda7f0 !important;
+}
+
+.quick-toggle-menu .header .icon,
+.quick-toggle-menu .icon-button {
+  border-radius: 0 !important;
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+}
+
+/* Remove split-toggle separator accent line entirely. */
+.quick-toggle-has-menu .quick-toggle-separator,
+.quick-toggle-has-menu:checked .quick-toggle-separator {
+  background-color: transparent !important;
+  width: 4px !important;
+}
+
+.quick-settings .slider {
+  color: #ff7447;
+  -barlevel-active-background-color: #ff7447;
+  -barlevel-background-color: #161616;
+}
+
+.osd-window {
+  background-color: #000000;
+  color: #bda7f0;
+  border: 1px solid #bda7f0;
+  border-radius: 0;
+}
+
+/* Dash to Dock / dash styling */
+#dashtodockContainer .dash-background,
+#dash .dash-background {
+  background-color: #000000;
+  border: 1px solid #bda7f0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+#dashtodockContainer .dash-item-container,
+#dash .dash-item-container {
+  margin: 0;
+}
+
+#dash .app-well-app .overview-icon {
+  border-radius: 0;
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+  padding: 5px;
+  icon-size: 8px;
+}
+
+#dashtodockContainer .app-well-app .overview-icon,
+#dashtodockContainer .show-apps .overview-icon {
+  border-radius: 0;
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+  padding: 5px;
+  icon-size: 8px;
+}
+
+/* Dash to Panel icon tiles */
+#dashtopanelTaskbar .app-well-app .overview-icon,
+#dashtopanelTaskbar .show-apps .overview-icon {
+  border-radius: 0;
+  border: 0;
+  background-color: transparent;
+  box-shadow: none;
+  padding: 5px;
+  icon-size: 8px;
+}
+
+#dashtopanelTaskbar .dash-item-container .overview-tile .dtp-container,
+#dashtopanelTaskbar .dash-item-container .show-apps {
+  border-top: 1px solid #bda7f0;
+  border-bottom: 1px solid #bda7f0;
+  border-left: 1px solid #bda7f0;
+  border-right: 0;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  background-color: #000000;
+  min-width: 46px;
+  min-height: 46px;
+}
+
+#dashtopanelTaskbar .dash-item-container .show-apps {
+  background-color: #bda7f0;
+}
+
+#dashtopanelTaskbar .dash-item-container .show-apps .overview-icon {
+  color: #000000;
+}
+
+#dashtopanelTaskbar .dash-item-container:last-child .overview-tile .dtp-container,
+#dashtopanelTaskbar .dash-item-container:last-child .show-apps {
+  border-right: 1px solid #bda7f0;
+}
+
+/* Show Apps may be outside taskbar as its own panel element. */
+.dashtopanelMainPanel #panelLeft > #showAppsButton,
+.dashtopanelMainPanel #panelLeft > #showAppsButton .show-apps {
+  border-bottom: 1px solid #bda7f0;
+  background-color: #bda7f0;
+  box-shadow: none;
+  background-image: none;
+}
+
+.dashtopanelMainPanel #panelLeft > #showAppsButton .show-apps .overview-icon {
+  color: #000000;
+}
+
+#dashtopanelTaskbar .dash-item-container .overview-tile .dtp-container:hover,
+#dashtopanelTaskbar .dash-item-container .overview-tile .dtp-container:focus,
+#dashtopanelTaskbar .dash-item-container .show-apps:hover {
+  border-color: #ff7447;
+  background-color: #191919;
+}
+
+.dashtopanelMainPanel .system-status-icon {
+  icon-size: 14px;
+}
+
+.dashtopanelMainPanel .panel-button.clock-display .clock {
+  font-family: "DM Mono";
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+
+.dashtopanelMainPanel .panel-button.clock-display {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+/* Force right-side panel buttons into square, non-pill style. */
+.dashtopanelMainPanel .panel-button,
+.dashtopanelMainPanel .panel-button:hover,
+.dashtopanelMainPanel .panel-button:focus,
+.dashtopanelMainPanel .panel-button:active,
+.dashtopanelMainPanel .panel-button:checked {
+  border-radius: 0 !important;
+  background-color: #000000 !important;
+  color: #bda7f0 !important;
+  box-shadow: none !important;
+}
+
+.dashtopanelMainPanel .panel-button.clock-display {
+  border-left: 1px solid #bda7f0 !important;
+  border-right: 1px solid #bda7f0 !important;
+}
+
+#dashtopanelTaskbar .overview-tile,
+#dashtopanelTaskbar .app-well-app,
+#dashtodockContainer .app-well-app,
+#dash .app-well-app {
+  transition-duration: 0ms !important;
+  transition-delay: 0ms !important;
+  transition-timing-function: linear !important;
+}
+
+#dashtopanelTaskbar .animate-appicon-hover,
+#dashtopanelTaskbar .animate-appicon-hover *,
+#dashtopanelTaskbar .overview-tile.animate-appicon-hover,
+#dashtopanelTaskbar .overview-tile.animate-appicon-hover *,
+#dashtopanelTaskbar .highlight-appicon-hover,
+#dashtopanelTaskbar .highlight-appicon-hover *,
+#dashtodockContainer .animate-appicon-hover,
+#dashtodockContainer .animate-appicon-hover * {
+  animation: none !important;
+  transition: none !important;
+  transform: none !important;
+}
+
+#dashtopanelTaskbar .dash-item-container,
+#dashtopanelTaskbar .dash-item-container > StWidget,
+#dashtopanelTaskbar .overview-tile,
+#dashtopanelTaskbar .overview-tile .dtp-container,
+#dashtopanelTaskbar .app-well-app {
+  margin: 0 !important;
+  padding: 0 !important;
+  spacing: 0 !important;
+}
+
+#dashtopanelTaskbar .overview-tile:hover .dtp-container,
+#dashtopanelTaskbar .overview-tile:focus .dtp-container,
+#dashtopanelTaskbar .overview-tile:active .dtp-container {
+  transform: translateY(0) scale(1) !important;
+}
+
+#dashtopanelTaskbar .app-well-app:hover .overview-icon,
+#dashtopanelTaskbar .app-well-app:focus .overview-icon,
+#dashtopanelTaskbar .app-well-app:active .overview-icon,
+#dashtopanelTaskbar .show-apps:hover .overview-icon {
+  transform: translateY(0) scale(1) !important;
+}
+
+#dashtopanelTaskbar .dash-item-container,
+#dashtopanelTaskbar .dash-item-container:hover,
+#dashtopanelTaskbar .dash-item-container:focus,
+#dashtopanelTaskbar .dash-item-container:active,
+#dashtopanelTaskbar .overview-tile,
+#dashtopanelTaskbar .overview-tile:hover,
+#dashtopanelTaskbar .overview-tile:focus,
+#dashtopanelTaskbar .overview-tile:active,
+#dashtopanelTaskbar .app-well-app,
+#dashtopanelTaskbar .app-well-app:hover,
+#dashtopanelTaskbar .app-well-app:focus,
+#dashtopanelTaskbar .app-well-app:active {
+  transform: none !important;
+  animation: none !important;
+  transition: none !important;
+  translate: none !important;
+}
+
+#dash .app-well-app:hover .overview-icon,
+#dash .app-well-app:focus .overview-icon,
+#dashtodockContainer .app-well-app:hover .overview-icon,
+#dashtodockContainer .app-well-app:focus .overview-icon,
+#dashtodockContainer .show-apps:hover .overview-icon {
+  background-color: #191919;
+  border-color: #ff7447;
+}
+
+#dash .app-well-app:active .overview-icon,
+#dash .app-well-app:checked .overview-icon,
+#dashtodockContainer .app-well-app:active .overview-icon,
+#dashtodockContainer .app-well-app:checked .overview-icon,
+#dashtopanelTaskbar .app-well-app:active .overview-icon,
+#dashtopanelTaskbar .app-well-app:checked .overview-icon {
+  background-color: #bda7f0;
+  color: #000000;
+}
+
+/* Hide default round running indicators; use square tile borders instead. */
+#dash .app-well-app-running-dot,
+#dashtodockContainer .app-well-app-running-dot,
+#dashtopanelTaskbar .app-well-app-running-dot {
+  width: 0;
+  height: 0;
+  margin: 0;
+  background: transparent;
+}
