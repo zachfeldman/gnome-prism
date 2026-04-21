@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Open book -->
+    <path d="M64 28 V108"/>
+    <!-- Left page -->
+    <path d="M64 28 C56 24, 32 20, 18 24 V104 C32 100, 56 104, 64 108"/>
+    <!-- Right page -->
+    <path d="M64 28 C72 24, 96 20, 110 24 V104 C96 100, 72 104, 64 108"/>
+    <!-- Text lines left -->
+    <line x1="28" y1="46" x2="54" y2="44"/>
+    <line x1="28" y1="60" x2="54" y2="58"/>
+    <line x1="28" y1="74" x2="54" y2="72"/>
+    <!-- Text lines right -->
+    <line x1="74" y1="44" x2="100" y2="46"/>
+    <line x1="74" y1="58" x2="100" y2="60"/>
+    <line x1="74" y1="72" x2="100" y2="74"/>
+  </g>
+</svg>

@@ -1,0 +1,107 @@
+{
+  "workbench.colorTheme": "Default High Contrast",
+  "workbench.settings.applyToAllProfiles": [],
+  "editor.fontFamily": "DM Mono, Noto Sans Mono, monospace",
+  "terminal.integrated.fontFamily": "DM Mono, Noto Sans Mono, monospace",
+  "scm.inputFontFamily": "DM Mono, Noto Sans Mono, monospace",
+  "debug.console.fontFamily": "DM Mono, Noto Sans Mono, monospace",
+  "workbench.colorCustomizations": {
+    "[Default High Contrast]": {
+      "editor.background": "#000000",
+      "sideBar.background": "#000000",
+      "activityBar.background": "#000000",
+      "statusBar.background": "#000000",
+      "editorGroupHeader.tabsBackground": "#000000",
+      "panel.background": "#000000",
+      "titleBar.activeBackground": "#000000",
+      "menu.background": "#000000",
+      "terminal.background": "#000000",
+      "input.background": "#000000",
+      "titleBar.activeForeground": "#BDA7F0",
+      "titleBar.inactiveForeground": "#BDA7F0",
+      "commandCenter.foreground": "#BDA7F0",
+      "commandCenter.activeForeground": "#BDA7F0",
+      "commandCenter.inactiveForeground": "#BDA7F0",
+      "commandCenter.border": "#BDA7F0",
+      "commandCenter.activeBorder": "#BDA7F0",
+      "editorLineNumber.foreground": "#BDA7F0",
+      "editorLineNumber.activeForeground": "#FF7447",
+      "contrastBorder": "#BDA7F0",
+      "editorGroup.border": "#BDA7F0",
+      "editorGroupHeader.tabsBorder": "#BDA7F0",
+      "tab.border": "#BDA7F0",
+      "tab.activeBorder": "#BDA7F0",
+      "tab.activeBorderTop": "#BDA7F0",
+      "sideBar.border": "#BDA7F0",
+      "activityBar.border": "#BDA7F0",
+      "statusBar.border": "#BDA7F0",
+      "titleBar.border": "#BDA7F0",
+      "statusBar.foreground": "#BDA7F0",
+      "statusBarItem.remoteForeground": "#BDA7F0",
+      "statusBarItem.remoteBackground": "#000000",
+      "statusBarItem.errorForeground": "#BDA7F0",
+      "statusBarItem.warningForeground": "#BDA7F0",
+      "statusBarItem.prominentForeground": "#BDA7F0",
+      "focusBorder": "#FF7447",
+      "tab.activeForeground": "#FF7447",
+      "editorCursor.foreground": "#FF7447",
+      "activityBarBadge.background": "#FF7447",
+      "activityBarBadge.foreground": "#000000",
+      "list.activeSelectionForeground": "#FF7447",
+      "list.activeSelectionBackground": "#000000",
+      "foreground": "#BDA7F0",
+      "editor.foreground": "#BDA7F0",
+      "activityBar.foreground": "#BDA7F0",
+      "activityBar.inactiveForeground": "#BDA7F0",
+      "icon.foreground": "#BDA7F0",
+      "sideBar.foreground": "#BDA7F0",
+      "tab.inactiveForeground": "#BDA7F0",
+      "breadcrumb.foreground": "#BDA7F0",
+      "breadcrumb.focusForeground": "#BDA7F0",
+      "breadcrumb.activeSelectionForeground": "#BDA7F0"
+    }
+  },
+  "editor.tokenColorCustomizations": {
+    "[Default High Contrast]": {
+      "textMateRules": [
+        {
+          "name": "Force Lavender",
+          "scope": [
+            "source",
+            "variable",
+            "keyword",
+            "storage.type",
+            "support.variable",
+            "punctuation",
+            "meta.brace",
+            "keyword.operator"
+          ],
+          "settings": {
+            "foreground": "#BDA7F0"
+          }
+        },
+        {
+          "name": "Orange: Structural Code (Keywords, Functions, Numbers)",
+          "scope": [
+            "keyword",
+            "storage",
+            "type",
+            "entity.name.function",
+            "support.function",
+            "entity.name.type",
+            "support.type",
+            "support.class",
+            "constant.numeric",
+            "constant.language",
+            "entity.name.tag",
+            "entity.other.attribute-name",
+            "meta.function-call"
+          ],
+          "settings": {
+            "foreground": "#FF7447"
+          }
+        }
+      ]
+    }
+  }
+}

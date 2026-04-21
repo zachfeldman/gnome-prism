@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Calendar body -->
+    <rect x="18" y="24" width="92" height="88" rx="8"/>
+    <!-- Top bar -->
+    <line x1="18" y1="48" x2="110" y2="48"/>
+    <!-- Binding rings -->
+    <line x1="44" y1="14" x2="44" y2="34"/>
+    <line x1="84" y1="14" x2="84" y2="34"/>
+    <!-- Date dots -->
+    <circle cx="42" cy="66" r="5" fill="var(--fill-0, #BDA7F0)"/>
+    <circle cx="64" cy="66" r="5" fill="var(--fill-0, #BDA7F0)"/>
+    <circle cx="86" cy="66" r="5" fill="var(--fill-0, #BDA7F0)"/>
+    <circle cx="42" cy="90" r="5" fill="var(--fill-0, #BDA7F0)"/>
+    <circle cx="64" cy="90" r="5" fill="var(--fill-0, #BDA7F0)"/>
+    <circle cx="86" cy="90" r="5" fill="var(--fill-0, #BDA7F0)"/>
+  </g>
+</svg>

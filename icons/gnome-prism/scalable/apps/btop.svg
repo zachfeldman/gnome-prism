@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Terminal window -->
+    <rect x="14" y="18" width="100" height="92" rx="8"/>
+    <!-- Title bar -->
+    <line x1="14" y1="36" x2="114" y2="36"/>
+    <!-- Bar chart (resource usage) -->
+    <line x1="30" y1="96" x2="30" y2="72"/>
+    <line x1="42" y1="96" x2="42" y2="52"/>
+    <line x1="54" y1="96" x2="54" y2="60"/>
+    <line x1="66" y1="96" x2="66" y2="44"/>
+    <line x1="78" y1="96" x2="78" y2="68"/>
+    <line x1="90" y1="96" x2="90" y2="56"/>
+    <line x1="100" y1="96" x2="100" y2="76"/>
+  </g>
+</svg>

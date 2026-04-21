@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- browser frame -->
+    <path d="M26 34V96C26 101.523 30.477 106 36 106H92C97.523 106 102 101.523 102 96V42C102 36.477 97.523 32 92 32H70L60 22H40C32.268 22 26 28.268 26 36"/>
+    <!-- top bar -->
+    <path d="M26 48H102"/>
+    <!-- tab shape -->
+    <path d="M40 22H60L70 32"/>
+    <!-- address/content cue -->
+    <path d="M40 64H88"/>
+    <path d="M40 80H74"/>
+  </g>
+</svg>

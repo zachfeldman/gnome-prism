@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Presentation screen -->
+    <rect x="18" y="22" width="92" height="68" rx="4"/>
+    <!-- Stand -->
+    <line x1="64" y1="90" x2="64" y2="110"/>
+    <line x1="38" y1="110" x2="90" y2="110"/>
+    <!-- Chart bar on slide -->
+    <line x1="38" y1="76" x2="38" y2="56"/>
+    <line x1="52" y1="76" x2="52" y2="42"/>
+    <line x1="66" y1="76" x2="66" y2="52"/>
+    <line x1="80" y1="76" x2="80" y2="36"/>
+    <line x1="94" y1="76" x2="94" y2="46"/>
+  </g>
+</svg>

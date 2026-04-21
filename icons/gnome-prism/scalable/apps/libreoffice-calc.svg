@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Spreadsheet body -->
+    <rect x="18" y="18" width="92" height="92" rx="6"/>
+    <!-- Grid lines - vertical -->
+    <line x1="48" y1="18" x2="48" y2="110"/>
+    <line x1="78" y1="18" x2="78" y2="110"/>
+    <!-- Grid lines - horizontal -->
+    <line x1="18" y1="48" x2="110" y2="48"/>
+    <line x1="18" y1="78" x2="110" y2="78"/>
+  </g>
+</svg>

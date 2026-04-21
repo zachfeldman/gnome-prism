@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Package box -->
+    <rect x="18" y="34" width="92" height="70" rx="6"/>
+    <!-- Box lid flaps -->
+    <path d="M14 34 L64 14 L114 34"/>
+    <!-- Gear on box -->
+    <circle cx="64" cy="70" r="18"/>
+    <circle cx="64" cy="70" r="8"/>
+    <!-- Gear teeth hints -->
+    <line x1="64" y1="48" x2="64" y2="54"/>
+    <line x1="64" y1="86" x2="64" y2="92"/>
+    <line x1="42" y1="70" x2="48" y2="70"/>
+    <line x1="80" y1="70" x2="86" y2="70"/>
+  </g>
+</svg>

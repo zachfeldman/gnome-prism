@@ -1,0 +1,323 @@
+/* gnome-prism GTK4 / libadwaita override.
+ * libadwaita apps (Nautilus, Settings, etc.) ignore theme-installed CSS.
+ * This file is installed to ~/.config/gtk-4.0/gtk.css by install.sh
+ * so that overrides take effect.
+ *
+ * Design tokens:
+ * - fd-bg: #000000
+ * - fd-stroke: #BDA7F0
+ * - highlight: #FF7447
+ */
+
+@define-color fp_bg #000000;
+@define-color fp_surface #191919;
+@define-color fp_stroke #BDA7F0;
+@define-color fp_highlight #FF7447;
+
+/* Override libadwaita named colors. */
+@define-color accent_bg_color @fp_stroke;
+@define-color accent_fg_color @fp_bg;
+@define-color accent_color @fp_stroke;
+@define-color window_bg_color @fp_bg;
+@define-color window_fg_color @fp_stroke;
+@define-color view_bg_color @fp_bg;
+@define-color view_fg_color @fp_stroke;
+@define-color headerbar_bg_color @fp_bg;
+@define-color headerbar_fg_color @fp_stroke;
+@define-color headerbar_border_color @fp_stroke;
+@define-color headerbar_backdrop_color @fp_bg;
+@define-color headerbar_shade_color transparent;
+@define-color card_bg_color @fp_bg;
+@define-color card_fg_color @fp_stroke;
+@define-color dialog_bg_color @fp_bg;
+@define-color dialog_fg_color @fp_stroke;
+@define-color popover_bg_color @fp_bg;
+@define-color popover_fg_color @fp_stroke;
+@define-color sidebar_bg_color @fp_bg;
+@define-color sidebar_fg_color @fp_stroke;
+@define-color sidebar_backdrop_color @fp_bg;
+@define-color sidebar_shade_color transparent;
+@define-color secondary_sidebar_bg_color @fp_bg;
+@define-color secondary_sidebar_fg_color @fp_stroke;
+@define-color shade_color transparent;
+@define-color scrollbar_outline_color @fp_stroke;
+
+/* Base surfaces. */
+window,
+dialog,
+.background {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+}
+
+/* Headerbar / titlebar. */
+headerbar,
+.titlebar {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-bottom: 1px solid @fp_stroke;
+  box-shadow: none;
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+}
+
+headerbar .title,
+headerbar .subtitle,
+.titlebar .title,
+.titlebar .subtitle,
+headerbar label,
+.titlebar label {
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+  font-weight: 600;
+}
+
+/* Window control buttons — square to match theme.
+ * Yaru sets border-radius: 9999px on the button.
+ * Vanilla libadwaita sets border-radius: 100% on the image inside the button.
+ * Override both. */
+windowcontrols button {
+  border-radius: 0;
+  padding: 3px;
+  margin: 0 2px;
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  box-shadow: none;
+  background-image: none;
+}
+
+windowcontrols button:hover {
+  background-color: @fp_surface;
+  color: @fp_stroke;
+}
+
+windowcontrols button:active,
+windowcontrols button:checked {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+windowcontrols > button > image {
+  border-radius: 0;
+}
+
+/* Close button inset. */
+headerbar .titlebutton.close,
+.titlebar .titlebutton.close,
+headerbar button.titlebutton.close,
+.titlebar button.titlebutton.close {
+  margin-right: 6px;
+}
+
+/* Buttons. */
+button {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+button:hover {
+  background-color: @fp_surface;
+  color: @fp_stroke;
+}
+
+button:active,
+button:checked {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+/* Text entries. */
+entry,
+textview,
+text,
+spinbutton {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-color: @fp_stroke;
+  border-radius: 0;
+  caret-color: @fp_highlight;
+}
+
+/* Selection. */
+selection {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+/* Links. */
+link {
+  color: @fp_highlight;
+}
+
+/* Progress bars. */
+progressbar progress {
+  background-color: @fp_highlight;
+}
+
+/* Sidebar (Nautilus places panel). */
+.sidebar,
+.navigation-sidebar,
+placessidebar,
+.sidebar-pane {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-right: 1px solid @fp_stroke;
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+}
+
+.sidebar row,
+.navigation-sidebar row,
+placessidebar row {
+  color: @fp_stroke;
+  border-radius: 0;
+  padding: 3px 6px;
+}
+
+.sidebar row:selected,
+.navigation-sidebar row:selected,
+placessidebar row:selected {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+.sidebar row:hover,
+.navigation-sidebar row:hover,
+placessidebar row:hover {
+  background-color: @fp_surface;
+  color: @fp_stroke;
+}
+
+/* Content / file list area. */
+.view,
+treeview,
+columnview,
+listview,
+gridview {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+}
+
+columnview row,
+listview row,
+gridview child {
+  color: @fp_stroke;
+  border-radius: 0;
+}
+
+columnview row:selected,
+listview row:selected,
+gridview child:selected {
+  background-color: @fp_stroke;
+  color: @fp_bg;
+}
+
+columnview row:hover,
+listview row:hover,
+gridview child:hover {
+  background-color: @fp_surface;
+}
+
+/* Column headers in list view. */
+columnview > header > button {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-bottom: 1px solid @fp_stroke;
+  border-radius: 0;
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+  font-weight: 600;
+}
+
+/* Popovers / dropdown menus. */
+popover,
+popover.background,
+popover contents {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border-color: @fp_stroke;
+  border-radius: 0;
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+}
+
+popover modelbutton:hover,
+popover row:hover {
+  background-color: @fp_surface;
+}
+
+/* Tabs / notebook. */
+notebook > header > tabs > tab {
+  padding: 4px 10px;
+  margin: 0 2px;
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  border-radius: 0;
+}
+
+notebook > header > tabs > tab:checked {
+  font-weight: 600;
+}
+
+/* Scrollbars. */
+scrollbar {
+  background-color: @fp_bg;
+}
+
+scrollbar slider {
+  background-color: @fp_stroke;
+  min-width: 8px;
+  min-height: 8px;
+  border-radius: 0;
+}
+
+scrollbar slider:hover {
+  background-color: @fp_highlight;
+}
+
+scrollbar trough {
+  background-color: @fp_surface;
+}
+
+/* Dialogs. */
+messagedialog,
+dialog.message,
+.message-dialog,
+dialog,
+window.dialog {
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+}
+
+/* Path bar / breadcrumbs. */
+.path-bar button,
+.linked button {
+  border-radius: 0;
+}
+
+/* Folder icons in Nautilus — tint to match stroke color. */
+.nautilus-canvas-item,
+.view image,
+gridview image {
+  -gtk-icon-filter: opacity(0.85);
+}
+
+/* Labels in themed containers should use the monospace font.
+ * Avoid bare window/label selectors — Chrome reads GTK4 CSS
+ * and bleeds font-family into web-page content. */
+headerbar label,
+.titlebar label,
+.sidebar label,
+.navigation-sidebar label,
+placessidebar label,
+messagedialog label,
+dialog label,
+window.dialog label,
+popover label,
+notebook > header label,
+columnview > header label {
+  font-family: "Noto Sans Mono", "DM Mono", monospace;
+}

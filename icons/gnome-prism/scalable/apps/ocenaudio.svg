@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Audio waveform -->
+    <line x1="16" y1="64" x2="16" y2="64"/>
+    <line x1="24" y1="52" x2="24" y2="76"/>
+    <line x1="32" y1="40" x2="32" y2="88"/>
+    <line x1="40" y1="28" x2="40" y2="100"/>
+    <line x1="48" y1="44" x2="48" y2="84"/>
+    <line x1="56" y1="20" x2="56" y2="108"/>
+    <line x1="64" y1="36" x2="64" y2="92"/>
+    <line x1="72" y1="24" x2="72" y2="104"/>
+    <line x1="80" y1="44" x2="80" y2="84"/>
+    <line x1="88" y1="32" x2="88" y2="96"/>
+    <line x1="96" y1="48" x2="96" y2="80"/>
+    <line x1="104" y1="54" x2="104" y2="74"/>
+    <line x1="112" y1="60" x2="112" y2="68"/>
+  </g>
+</svg>

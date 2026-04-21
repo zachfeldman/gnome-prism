@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <!-- Gear outer shape with teeth -->
+  <path d="
+    M58.5 10L55.2 25.4C51.8 26.3 48.6 27.7 45.7 29.5L31.6 22.4L22.4 31.6L29.5 45.7C27.7 48.6 26.3 51.8 25.4 55.2L10 58.5V69.5L25.4 72.8C26.3 76.2 27.7 79.4 29.5 82.3L22.4 96.4L31.6 105.6L45.7 98.5C48.6 100.3 51.8 101.7 55.2 102.6L58.5 118H69.5L72.8 102.6C76.2 101.7 79.4 100.3 82.3 98.5L96.4 105.6L105.6 96.4L98.5 82.3C100.3 79.4 101.7 76.2 102.6 72.8L118 69.5V58.5L102.6 55.2C101.7 51.8 100.3 48.6 98.5 45.7L105.6 31.6L96.4 22.4L82.3 29.5C79.4 27.7 76.2 26.3 72.8 25.4L69.5 10H58.5Z
+  " stroke="var(--fill-0, #BDA7F0)" stroke-width="5" stroke-linejoin="round" fill="none"/>
+  <!-- Center circle -->
+  <circle cx="64" cy="64" r="18" stroke="var(--fill-0, #BDA7F0)" stroke-width="5" fill="none"/>
+</svg>

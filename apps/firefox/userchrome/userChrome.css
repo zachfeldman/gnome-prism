@@ -1,0 +1,154 @@
+/* gnome-prism optional Firefox chrome overrides
+ *
+ * This file is intentionally "best effort":
+ * - Mozilla does not officially support userChrome.css.
+ * - Selectors may break on Firefox updates.
+ *
+ * Requires:
+ * 1) about:config -> toolkit.legacyUserProfileCustomizations.stylesheets = true
+ * 2) Place this file at: <profile>/chrome/userChrome.css
+ */
+
+:root {
+  --fp-bg: #000000;
+  --fp-surface: #08080c;
+  --fp-stroke: #bda7f0;
+  --fp-highlight: #ff7447;
+  --fp-text: #bda7f0;
+  --fp-text-strong: #e3d9ff;
+}
+
+#main-window,
+#titlebar,
+#tabbrowser-tabbox {
+  background: var(--fp-bg) !important;
+}
+
+#navigator-toolbox {
+  background: var(--fp-bg) !important;
+  border: 1px solid var(--fp-stroke) !important;
+  box-shadow: none !important;
+}
+
+#TabsToolbar,
+#nav-bar,
+#PersonalToolbar {
+  background: var(--fp-bg) !important;
+  color: var(--fp-text) !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+#TabsToolbar {
+  border-bottom: 1px solid var(--fp-stroke) !important;
+  min-height: 34px !important;
+}
+
+#nav-bar {
+  border-top: 1px solid var(--fp-stroke) !important;
+  border-bottom: 1px solid var(--fp-stroke) !important;
+  padding: 4px !important;
+}
+
+#PersonalToolbar {
+  border-top: 1px solid var(--fp-stroke) !important;
+}
+
+#tabbrowser-tabs .tabbrowser-tab {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+#tabbrowser-tabs .tab-stack {
+  margin: 0 2px 0 0 !important;
+}
+
+#tabbrowser-tabs .tab-content {
+  padding: 0 10px !important;
+}
+
+.tab-background {
+  background: var(--fp-surface) !important;
+  border: 1px solid var(--fp-stroke) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-background {
+  border-color: var(--fp-stroke) !important;
+  background: var(--fp-bg) !important;
+}
+
+.tabbrowser-tab .tab-label {
+  color: var(--fp-text) !important;
+  font-family: "Noto Sans Mono", "DM Mono", monospace !important;
+  font-weight: 500 !important;
+}
+
+#urlbar-background,
+#searchbar,
+.findbar-textbox {
+  background: var(--fp-surface) !important;
+  color: var(--fp-text) !important;
+  border: 1px solid var(--fp-stroke) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+#urlbar[focused="true"] > #urlbar-background,
+#searchbar:focus-within {
+  border-color: var(--fp-stroke) !important;
+}
+
+#urlbar-input,
+#searchbar input,
+.findbar-textbox {
+  color: var(--fp-text) !important;
+  font-family: "Noto Sans Mono", "DM Mono", monospace !important;
+}
+
+.toolbarbutton-1 {
+  border-radius: 0 !important;
+  color: var(--fp-text) !important;
+  border: 1px solid transparent !important;
+  padding: 6px !important;
+  box-shadow: none !important;
+}
+
+.toolbarbutton-1:hover {
+  background: var(--fp-surface) !important;
+  border-color: var(--fp-stroke) !important;
+}
+
+.titlebar-button {
+  border-radius: 0 !important;
+  border: 1px solid var(--fp-stroke) !important;
+  color: var(--fp-text) !important;
+  margin: 0 !important;
+}
+
+.titlebar-button:hover {
+  background: var(--fp-surface) !important;
+}
+
+#identity-box,
+#tracking-protection-icon-container,
+#star-button-box,
+#page-action-buttons {
+  border-radius: 0 !important;
+}
+
+#urlbar-container {
+  padding: 0 !important;
+}
+
+panel,
+.panel-subview-body,
+menupopup,
+.autocomplete-richlistbox {
+  background: var(--fp-bg) !important;
+  color: var(--fp-text) !important;
+  border: 1px solid var(--fp-stroke) !important;
+  border-radius: 0 !important;
+}

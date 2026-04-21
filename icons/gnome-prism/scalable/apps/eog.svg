@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Eye shape -->
+    <path d="M10 64 C30 30, 60 18, 64 18 C68 18, 98 30, 118 64 C98 98, 68 110, 64 110 C60 110, 30 98, 10 64Z"/>
+    <!-- Iris -->
+    <circle cx="64" cy="64" r="20"/>
+    <!-- Pupil -->
+    <circle cx="64" cy="64" r="8" fill="var(--fill-0, #BDA7F0)"/>
+  </g>
+</svg>

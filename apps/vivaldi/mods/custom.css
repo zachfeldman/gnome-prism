@@ -1,0 +1,844 @@
+/* gnome-prism Vivaldi UI mod (proof of concept)
+ * Apply via Vivaldi Settings -> Appearance -> Custom UI Modifications.
+ */
+
+:root {
+  --fp-bg: #000000;
+  --fp-input-bg: #191919;
+  --fp-surface: #08080c;
+  --fp-stroke: #bda7f0;
+  --fp-highlight: #ff7447;
+  --fp-text: #bda7f0;
+  --fp-text-strong: #e3d9ff;
+}
+
+#browser,
+#main,
+#header,
+#tabs-container,
+#webview-container {
+  background: var(--fp-bg) !important;
+  color: var(--fp-text) !important;
+}
+
+/* Start Page / webview surface: prevent any default white strip/background. */
+#webpage-stack,
+#webpage-stack .webpageview,
+#webpage-stack .webpage,
+#webpage-stack .internal-page,
+#webpage-stack .startpage,
+#webpage-stack .speeddial,
+#webpage-stack .dials,
+#webpage-stack .startpage-content,
+#webpage-stack .sdwrapper {
+  background: var(--fp-bg) !important;
+  background-color: var(--fp-bg) !important;
+}
+
+#browser {
+  /* Override Vivaldi internal accent variables to prevent red rails. */
+  --colorAccentBg: var(--fp-stroke) !important;
+  --colorAccentBgDark: var(--fp-stroke) !important;
+  --colorAccentBgFaded: rgba(189, 167, 240, 0.45) !important;
+  --colorAccentBgFadedMore: rgba(189, 167, 240, 0.30) !important;
+  --colorAccentBgFadedMost: rgba(189, 167, 240, 0.18) !important;
+  --colorBorderHighlight: var(--fp-stroke) !important;
+  --colorHighlightBg: var(--fp-stroke) !important;
+  border: 1px solid var(--fp-stroke) !important;
+  box-shadow: none !important;
+}
+
+/* Prevent red accent rails during maximize/restore transitions. */
+#browser.linux:not(.maximized),
+#browser.linux:not(.maximized) #header,
+#browser.linux:not(.maximized) #tabs-container,
+#browser.linux:not(.maximized) .mainbar,
+#browser.linux:not(.maximized) .toolbar-mainbar,
+#browser.linux:not(.maximized) .toolbar-addressbar {
+  border-color: var(--fp-stroke) !important;
+  border-style: solid !important;
+  border-width: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Draw only the rails we want in windowed mode, at controlled thickness. */
+#browser.linux:not(.maximized) {
+  border: 2px solid var(--fp-stroke) !important;
+}
+
+#browser.linux:not(.maximized) .toolbar-mainbar {
+  border-top: 2px solid var(--fp-stroke) !important;
+  border-bottom: 2px solid var(--fp-stroke) !important;
+}
+
+#header,
+#tabs-container,
+#footer {
+  border-bottom: 1px solid var(--fp-stroke) !important;
+  box-shadow: none !important;
+}
+
+.tab-position .tab,
+.tab-position .tab .tab-header,
+.tab-position .tab.active .tab-header {
+  background: var(--fp-bg) !important;
+  border: 1px solid var(--fp-stroke) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  min-height: 36px !important;
+  height: 36px !important;
+}
+
+.tab-position .tab .title {
+  color: var(--fp-text) !important;
+  font-family: "DM Mono", "Noto Sans Mono", monospace !important;
+  font-size: 125% !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  line-height: 1 !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Some builds wrap tab text in an inner span; normalize baseline there too. */
+.tab-position .tab .title > span,
+.tab-position .tab .tab-header .title > span,
+.tab-position .tab .tab-content .title > span {
+  line-height: 1 !important;
+  display: block !important;
+}
+
+.tab-position .tab .tab-header,
+.tab-position .tab .tab-content {
+  display: flex !important;
+  align-items: center !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+.tab-position .tab .favicon,
+.tab-position .tab .favicon img,
+.tab-position .tab .tab-header img {
+  width: 12px !important;
+  height: 12px !important;
+  min-width: 12px !important;
+  min-height: 12px !important;
+  margin-right: 4px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  object-fit: contain !important;
+}
+
+.tab-position .tab.active {
+  border-color: var(--fp-stroke) !important;
+}
+
+.tab-position .tab.active .title {
+  color: var(--fp-text-strong) !important;
+}
+
+/* Keep tab close "X" visible at all times (not hover-only). */
+.tab-position .tab .close,
+.tab-position .tab .button-toolbar.close,
+.tab-position .tab .tab-header .close,
+.tab-position .tab button[title*="Close"],
+.tab-position .tab [aria-label*="Close"] {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+.tab-position .tab .close svg,
+.tab-position .tab .button-toolbar.close svg,
+.tab-position .tab .tab-header .close svg {
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+.toolbar-mainbar,
+.toolbar-addressbar,
+.toolbar,
+.UrlBar,
+.UrlBar-AddressField,
+.searchfield,
+.SearchField,
+.button-toolbar,
+input,
+textarea,
+button {
+  background: var(--fp-bg) !important;
+  color: var(--fp-text) !important;
+  border-color: var(--fp-stroke) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.toolbar-mainbar {
+  border-top: 1px solid var(--fp-stroke) !important;
+  border-bottom: 1px solid var(--fp-stroke) !important;
+  position: relative !important;
+}
+
+.toolbar-addressbar .UrlBar-AddressField,
+.toolbar-addressbar .addressfield {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  width: 100% !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  margin-inline-start: 0 !important;
+  margin-inline-end: 0 !important;
+  justify-self: start !important;
+  align-self: center !important;
+}
+
+.toolbar-addressbar {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* Kill any auto-centering spacer nodes some Vivaldi states insert. */
+.toolbar-addressbar > [class*="spacer"],
+.toolbar-addressbar > [class*="Spacer"],
+.toolbar-addressbar > .spacer {
+  flex: 0 0 0 !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+
+/* Ensure button groups don't consume flexible space. */
+.toolbar-addressbar > .button-toolbar,
+.toolbar-addressbar > .toolbar-extensions,
+.toolbar-addressbar > .extensions-wrapper {
+  flex: 0 0 auto !important;
+}
+
+.toolbar-addressbar .button-toolbar,
+.window-buttongroup button {
+  border: 1px solid var(--fp-stroke) !important;
+  margin: 0 2px 0 0 !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+}
+
+.button-toolbar:hover,
+button:hover {
+  background: var(--fp-surface) !important;
+}
+
+.UrlBar-AddressField,
+.addressfield,
+.searchfield,
+.SearchField {
+  border: 1px solid var(--fp-stroke) !important;
+  border-left: 1px solid var(--fp-stroke) !important;
+  background: var(--fp-input-bg) !important;
+  background-color: var(--fp-input-bg) !important;
+  color: var(--fp-text) !important;
+  font-family: "DM Mono", "Noto Sans Mono", monospace !important;
+  font-size: 13px !important;
+  min-height: 32px !important;
+  height: 32px !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Keep URL/search field dark while focused/typing. */
+.UrlBar-AddressField:focus,
+.UrlBar-AddressField:focus-within,
+.UrlBar-AddressField:active,
+.addressfield:focus,
+.addressfield:focus-within,
+.addressfield:active,
+.SearchField:focus,
+.SearchField:focus-within,
+.SearchField:active,
+.searchfield:focus,
+.searchfield:focus-within,
+.searchfield:active {
+  background: var(--fp-input-bg) !important;
+  background-color: var(--fp-input-bg) !important;
+  border-color: var(--fp-stroke) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Vivaldi applies focus styling with high-specificity selectors in some builds.
+ * Override those exact focus chains so side rails use input background color.
+ */
+#browser.color-behind-tabs-on .UrlBar-AddressField:focus-within,
+#browser .UrlBar-AddressField.urlfield-anchor.button-textonly.below:focus-within,
+#browser .UrlBar-AddressField.urlfield-anchor.button-textonly.above:focus-within,
+#browser .addressfield:focus-within,
+#browser .searchfield:focus-within {
+  border-color: var(--fp-input-bg) !important;
+  border-left-color: var(--fp-input-bg) !important;
+  border-right-color: var(--fp-input-bg) !important;
+  box-shadow: 0 0 0 1px var(--fp-input-bg) inset !important;
+  outline: none !important;
+  background: var(--fp-input-bg) !important;
+  background-color: var(--fp-input-bg) !important;
+}
+
+/* Hard reset all nested paint/border layers so click/focus cannot add white side rails.
+ * Keep a single outer border on the field itself only.
+ */
+.UrlBar-AddressField *,
+.addressfield *,
+.searchfield *,
+.SearchField * {
+  box-shadow: none !important;
+  outline: none !important;
+  border-left-color: var(--fp-input-bg) !important;
+  border-right-color: var(--fp-input-bg) !important;
+}
+
+.UrlBar-AddressField *:focus,
+.addressfield *:focus,
+.searchfield *:focus,
+.SearchField *:focus,
+.UrlBar-AddressField *:focus-within,
+.addressfield *:focus-within,
+.searchfield *:focus-within,
+.SearchField *:focus-within,
+.UrlBar-AddressField *:active,
+.addressfield *:active,
+.searchfield *:active,
+.SearchField *:active {
+  box-shadow: none !important;
+  outline: none !important;
+  border-left-color: var(--fp-input-bg) !important;
+  border-right-color: var(--fp-input-bg) !important;
+  background: var(--fp-input-bg) !important;
+  background-color: var(--fp-input-bg) !important;
+}
+
+/* Some Vivaldi builds draw the side rails through pseudo-elements. */
+.UrlBar-AddressField *::before,
+.UrlBar-AddressField *::after,
+.addressfield *::before,
+.addressfield *::after,
+.searchfield *::before,
+.searchfield *::after,
+.SearchField *::before,
+.SearchField *::after {
+  border-left-color: var(--fp-input-bg) !important;
+  border-right-color: var(--fp-input-bg) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Remove extra inner side borders/rings that appear on click/focus. */
+.UrlBar-AddressField::before,
+.UrlBar-AddressField::after,
+.addressfield::before,
+.addressfield::after {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+}
+
+.UrlBar-AddressField [class*="AddressField"],
+.UrlBar-AddressField [class*="UrlField"],
+.UrlBar-AddressField [class*="SearchField"],
+.addressfield [class*="AddressField"],
+.addressfield [class*="UrlField"],
+.addressfield [class*="SearchField"] {
+  background: var(--fp-input-bg) !important;
+  background-color: var(--fp-input-bg) !important;
+  box-shadow: none !important;
+  outline: none !important;
+  border-left-color: transparent !important;
+  border-right-color: transparent !important;
+}
+
+/* Match search icon background to the search/address field. */
+.UrlBar-AddressField .searchfield-search-icon,
+.addressfield .searchfield-search-icon,
+.SearchField .searchfield-search-icon,
+.searchfield .searchfield-search-icon,
+.UrlBar-AddressField .searchfield-search-icon svg,
+.addressfield .searchfield-search-icon svg {
+  background: var(--fp-input-bg) !important;
+  background-color: var(--fp-input-bg) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+.UrlBar-AddressField input,
+.UrlBar-AddressField .url,
+.addressfield input,
+.addressfield .url,
+.OmniDropdown-Collection,
+.OmniDropdown-CollectionItem,
+.OmniLinkItem,
+.OmniLinkItem .title,
+.OmniLinkItem .url {
+  font-family: "DM Mono", "Noto Sans Mono", monospace !important;
+  color: var(--fp-text) !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+  letter-spacing: 0 !important;
+}
+
+.UrlBar-AddressField .title,
+.addressfield .title {
+  opacity: 1 !important;
+}
+
+/* Keep input text/caret consistently themed in all URL field states. */
+.UrlBar-UrlField,
+input.UrlBar-UrlField,
+.UrlField input.UrlBar-UrlField {
+  color: var(--fp-text) !important;
+  -webkit-text-fill-color: var(--fp-text) !important;
+  caret-color: var(--fp-highlight) !important;
+}
+
+/* Hard reset the editable URL input layer (source of white focus rails in some builds). */
+.UrlBar-AddressField input,
+.UrlBar-AddressField input.UrlBar-UrlField,
+.UrlBar-AddressField .UrlBar-UrlField,
+.addressfield input,
+.addressfield input.UrlBar-UrlField,
+.addressfield .UrlBar-UrlField {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  border: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: var(--fp-input-bg) !important;
+  background-color: var(--fp-input-bg) !important;
+  line-height: 1.2 !important;
+  color: var(--fp-text) !important;
+  -webkit-text-fill-color: var(--fp-text) !important;
+  caret-color: var(--fp-highlight) !important;
+  margin: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  transform: none !important;
+}
+
+.UrlBar-AddressField input:focus,
+.UrlBar-AddressField input:focus-visible,
+.UrlBar-AddressField input:active,
+.UrlBar-AddressField input.UrlBar-UrlField:focus,
+.UrlBar-AddressField input.UrlBar-UrlField:focus-visible,
+.addressfield input:focus,
+.addressfield input:focus-visible,
+.addressfield input:active,
+.addressfield input.UrlBar-UrlField:focus,
+.addressfield input.UrlBar-UrlField:focus-visible {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  border: 0 !important;
+  border-left: 0 !important;
+  border-right: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: var(--fp-input-bg) !important;
+  background-color: var(--fp-input-bg) !important;
+  transform: none !important;
+}
+
+.UrlBar-AddressField .url,
+.addressfield .url {
+  display: initial !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+.UrlBar-AddressField input::selection,
+.addressfield input::selection {
+  background: var(--fp-stroke) !important;
+  color: var(--fp-bg) !important;
+}
+
+.UrlBar-AddressField input::-moz-selection,
+.addressfield input::-moz-selection {
+  background: var(--fp-stroke) !important;
+  color: var(--fp-bg) !important;
+}
+
+.UrlBar-AddressField [class*="UrlFragment"],
+.addressfield [class*="UrlFragment"],
+.UrlBar-AddressField [class*="Host"],
+.addressfield [class*="Host"],
+.UrlBar-AddressField [class*="Lowlight"],
+.addressfield [class*="Lowlight"] {
+  color: var(--fp-text) !important;
+  opacity: 1 !important;
+}
+
+/* Stabilize URL rendering by hiding the display fragment wrapper entirely.
+ * Keep only the input text layer for all states.
+ */
+.UrlBar-AddressField .UrlFragment-Wrapper,
+.addressfield .UrlFragment-Wrapper {
+  display: none !important;
+}
+
+.window-buttongroup {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+  position: absolute !important;
+  right: 6px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 20 !important;
+}
+
+.WindowButton-Button {
+  border: 1px solid var(--fp-stroke) !important;
+  border-radius: 0 !important;
+  background: var(--fp-bg) !important;
+  margin-top: 2px !important;
+  margin-bottom: 2px !important;
+}
+
+/* Match mock: hide dense left-side panel button strip and workspace affordances. */
+#panels-container,
+#switch,
+[title*="Workspaces"],
+[aria-label*="Workspaces"],
+[name*="Workspace"],
+[title*="workspace"],
+[aria-label*="workspace"] {
+  display: none !important;
+}
+
+/* Remove VPN button and adjacent profile/account utility controls. */
+[title*="VPN"],
+[aria-label*="VPN"],
+[name*="VPN"],
+[title*="Protect"],
+[aria-label*="Protect"],
+[name*="Protect"],
+[title*="Profile"],
+[aria-label*="Profile"],
+[name*="Profile"],
+[title*="Account"],
+[aria-label*="Account"],
+[name*="Account"],
+[title*="People"],
+[aria-label*="People"],
+[title*="Gift"],
+[aria-label*="Gift"],
+[name*="Gift"],
+[title*="gift"],
+[aria-label*="gift"],
+[name*="gift"],
+[title*="Rewards"],
+[aria-label*="Rewards"],
+[name*="Rewards"],
+[title*="Vivaldi Offers"],
+[aria-label*="Vivaldi Offers"] {
+  display: none !important;
+}
+
+/* Explicit invite/share fallbacks across builds. */
+[title*="Invite"],
+[aria-label*="Invite"],
+[name*="Invite"],
+[title*="Share"],
+[aria-label*="Share"],
+[name*="Share"],
+[title*="Referral"],
+[aria-label*="Referral"],
+[name*="Referral"],
+[data-id*="invite"],
+[data-id*="share"],
+[class*="invite"],
+[class*="Invite"],
+[class*="share"],
+[class*="Share"],
+[class*="referral"],
+[class*="Referral"] {
+  display: none !important;
+}
+
+/* Fallback: hide the trailing promo/gift button in right utility cluster.
+ * Some builds don't expose stable title/aria labels.
+ */
+.toolbar-addressbar > .button-toolbar:last-of-type,
+.toolbar-addressbar .toolbar-group:last-child > .button-toolbar:last-of-type,
+.toolbar-addressbar .button-toolbar-group:last-child > .button-toolbar:last-of-type {
+  display: none !important;
+}
+
+/* More aggressive fallback for builds where the gift icon is nested
+ * inside trailing right-side utility wrappers without stable labels.
+ */
+.toolbar-mainbar .toolbar-addressbar .toolbar-group:last-child > *:last-child,
+.toolbar-mainbar .toolbar-addressbar .button-toolbar-group:last-child > *:last-child,
+.toolbar-mainbar .toolbar-addressbar > .toolbar-group:last-child > *:last-child,
+.toolbar-mainbar .toolbar-addressbar > .button-toolbar-group:last-child > *:last-child,
+.toolbar-mainbar .toolbar-addressbar > *:last-child > *:last-child {
+  display: none !important;
+}
+
+/* Deterministic fallback: hide the utility button immediately after reload/refresh.
+ * In current layout this is the invite/gift trigger.
+ */
+.toolbar-addressbar .button-toolbar:has([title*="Reload"]) + .button-toolbar,
+.toolbar-addressbar .button-toolbar:has([aria-label*="Reload"]) + .button-toolbar,
+.toolbar-addressbar .button-toolbar:has([title*="Refresh"]) + .button-toolbar,
+.toolbar-addressbar .button-toolbar:has([aria-label*="Refresh"]) + .button-toolbar {
+  display: none !important;
+}
+
+/* Remove extension/utility button strip near top-right (including VPN button container). */
+.extensions-wrapper,
+.toolbar-extensions,
+.toolbar-extensions .button-toolbar,
+.toolbar-mainbar .extensions-wrapper,
+.toolbar-mainbar .toolbar-extensions {
+  display: none !important;
+}
+
+/* Hide utility buttons by semantic descendants, collapsing full button containers. */
+.button-toolbar:has([title*="VPN"]),
+.button-toolbar:has([aria-label*="VPN"]),
+.button-toolbar:has([title*="Protect"]),
+.button-toolbar:has([aria-label*="Protect"]),
+.button-toolbar:has([title*="Content Blocker"]),
+.button-toolbar:has([aria-label*="Content Blocker"]),
+.button-toolbar:has([title*="Tracker Blocker"]),
+.button-toolbar:has([aria-label*="Tracker Blocker"]),
+[title*="Content Blocker"],
+[aria-label*="Content Blocker"],
+[title*="Tracker Blocker"],
+[aria-label*="Tracker Blocker"],
+.button-toolbar:has([title*="Profile"]),
+.button-toolbar:has([aria-label*="Profile"]),
+.button-toolbar:has([title*="Account"]),
+.button-toolbar:has([aria-label*="Account"]),
+.button-toolbar:has([title*="People"]),
+.button-toolbar:has([aria-label*="People"]),
+.button-toolbar:has([title*="Workspaces"]),
+.button-toolbar:has([aria-label*="Workspaces"]),
+.button-toolbar:has([title*="Tab Menu"]),
+.button-toolbar:has([aria-label*="Tab Menu"]),
+.button-toolbar:has([title*="All Tabs"]),
+.button-toolbar:has([aria-label*="All Tabs"]),
+.button-toolbar:has([title*="Open Tabs"]),
+.button-toolbar:has([aria-label*="Open Tabs"]),
+.button-toolbar:has([title*="Search all tabs"]),
+.button-toolbar:has([aria-label*="Search all tabs"]),
+.button-toolbar:has([title*="Tab Switcher"]),
+.button-toolbar:has([aria-label*="Tab Switcher"]),
+.button-toolbar:has([title*="Bookmark"]),
+.button-toolbar:has([aria-label*="Bookmark"]),
+.button-toolbar:has([title*="Bookmarks"]),
+.button-toolbar:has([aria-label*="Bookmarks"]),
+[title*="Tab Menu"],
+[aria-label*="Tab Menu"],
+[title*="All Tabs"],
+[aria-label*="All Tabs"],
+[title*="Open Tabs"],
+[aria-label*="Open Tabs"],
+[title*="Search all tabs"],
+[aria-label*="Search all tabs"],
+[title*="Tab Switcher"],
+[aria-label*="Tab Switcher"],
+[title*="Bookmark"],
+[aria-label*="Bookmark"],
+[title*="Bookmarks"],
+[aria-label*="Bookmarks"] {
+  display: none !important;
+}
+
+/* Keep the lower-right utility icons uniformly sized. */
+.toolbar-addressbar .button-toolbar {
+  width: 34px !important;
+  height: 34px !important;
+  min-width: 34px !important;
+  min-height: 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* Ensure hidden utility/tab buttons leave no empty framed slot. */
+.toolbar-addressbar .button-toolbar:has([title*="Content Blocker"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Content Blocker"]),
+.toolbar-addressbar .button-toolbar:has([title*="Tracker Blocker"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Tracker Blocker"]),
+.toolbar-addressbar .button-toolbar:has([title*="Tab Menu"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Tab Menu"]),
+.toolbar-addressbar .button-toolbar:has([title*="All Tabs"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="All Tabs"]),
+.toolbar-addressbar .button-toolbar:has([title*="Open Tabs"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Open Tabs"]),
+.toolbar-addressbar .button-toolbar:has([title*="Search all tabs"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Search all tabs"]),
+.toolbar-addressbar .button-toolbar:has([title*="Tab Switcher"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Tab Switcher"]),
+.toolbar-addressbar .button-toolbar:has([title*="Bookmark"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Bookmark"]),
+.toolbar-addressbar .button-toolbar:has([title*="Bookmarks"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Bookmarks"]) {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+/* Fallback: hide trailing "all tabs/tab menu" chevron button near window controls.
+ * This catches builds where title/aria selectors are absent or localized.
+ */
+.toolbar-addressbar .UrlBar-AddressField ~ .button-toolbar:last-of-type,
+.toolbar-addressbar > .button-toolbar:last-of-type:has([class*="Tab"]),
+.toolbar-addressbar > .button-toolbar:last-of-type:has([class*="tabs"]),
+.toolbar-addressbar > .button-toolbar:last-of-type:has([class*="Menu"]),
+.toolbar-addressbar > .button-toolbar:last-of-type:has([class*="menu"]),
+.toolbar-addressbar > .button-toolbar:last-of-type:has([class*="Chevron"]),
+.toolbar-addressbar > .button-toolbar:last-of-type:has([class*="chevron"]) {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+
+/* Remove framed boxes from left-side navigation controls. */
+.button-toolbar:has([title*="Back"]),
+.button-toolbar:has([aria-label*="Back"]),
+.button-toolbar:has([title*="Forward"]),
+.button-toolbar:has([aria-label*="Forward"]),
+.button-toolbar:has([title*="Reload"]),
+.button-toolbar:has([aria-label*="Reload"]),
+.button-toolbar:has([title*="Panel"]),
+.button-toolbar:has([aria-label*="Panel"]) {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+/* Remove seam between reload cluster and lock/address field. */
+.toolbar-addressbar .button-toolbar:has([title*="Reload"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Reload"]),
+.toolbar-addressbar .button-toolbar:has([title*="Refresh"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Refresh"]) {
+  border-right: 0 !important;
+}
+
+.toolbar-addressbar .button-toolbar:has([title*="Site Info"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Site Info"]),
+.toolbar-addressbar .button-toolbar:has([title*="Security"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Security"]),
+.toolbar-addressbar .button-toolbar:has([title*="Lock"]),
+.toolbar-addressbar .button-toolbar:has([aria-label*="Lock"]) {
+  border-left: 0 !important;
+  border-right: 0 !important;
+}
+
+/* Keep favicons in URL/search areas small and transparent. */
+.UrlBar-AddressField .favicon,
+.UrlBar-AddressField .favicon img,
+.UrlBar-AddressField .site-favicon,
+.UrlBar-AddressField .site-favicon img,
+.UrlBar-AddressField img,
+.addressfield .favicon,
+.addressfield .favicon img,
+.addressfield .site-favicon,
+.addressfield .site-favicon img,
+.OmniLinkItem .favicon,
+.OmniLinkItem .favicon img {
+  width: 7px !important;
+  height: 7px !important;
+  min-width: 7px !important;
+  min-height: 7px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  object-fit: contain !important;
+}
+
+.UrlBar-AddressField .favicon,
+.UrlBar-AddressField .site-favicon,
+.addressfield .favicon,
+.addressfield .site-favicon {
+  margin: 0 1px !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  max-width: 9px !important;
+  max-height: 9px !important;
+}
+
+/* Remove remaining inner button border on left navigation controls. */
+.toolbar-mainbar .button-toolbar,
+.toolbar-mainbar .button-toolbar button {
+  border: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+/* Remove bottom status strip entirely. */
+#footer,
+.toolbar-statusbar,
+.StatusInfo,
+.statusbar {
+  display: none !important;
+}
+
+#switch,
+#switch .button-toolbar,
+#switch button {
+  border: 1px solid var(--fp-stroke) !important;
+  border-radius: 0 !important;
+}
+
+/* Final border normalization (must stay late in file).
+ * Apply to all Linux window states (maximized + non-maximized), since Vivaldi
+ * can keep .maximized across restore transitions.
+ */
+#browser.linux #header,
+#browser.linux #tabs-container,
+#browser.linux .mainbar,
+#browser.linux .toolbar-mainbar,
+#browser.linux .toolbar-addressbar {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+#browser.linux {
+  border: 1px solid var(--fp-stroke) !important;
+  box-shadow: none !important;
+}
+
+/* Draw a single separator for each chrome row to avoid stacked thick rails. */
+#browser.linux #tabs-container {
+  border-bottom: 1px solid var(--fp-stroke) !important;
+}
+
+#browser.linux .toolbar-mainbar {
+  border-bottom: 1px solid var(--fp-stroke) !important;
+}

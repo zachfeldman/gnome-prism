@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Circular arrows (transfer/sync) -->
+    <path d="M64 18 A46 46 0 0 1 106 78"/>
+    <path d="M106 78 L96 70 M106 78 L98 88"/>
+    <path d="M64 110 A46 46 0 0 1 22 50"/>
+    <path d="M22 50 L32 58 M22 50 L30 40"/>
+    <!-- Down arrow in center -->
+    <line x1="64" y1="44" x2="64" y2="84"/>
+    <path d="M52 72 L64 84 L76 72"/>
+  </g>
+</svg>

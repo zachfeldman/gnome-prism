@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Terminal window -->
+    <rect x="14" y="18" width="100" height="92" rx="8"/>
+    <!-- Title bar -->
+    <line x1="14" y1="36" x2="114" y2="36"/>
+    <!-- CPU meter bars (horizontal, like htop) -->
+    <line x1="28" y1="50" x2="80" y2="50"/>
+    <line x1="28" y1="62" x2="60" y2="62"/>
+    <line x1="28" y1="74" x2="92" y2="74"/>
+    <line x1="28" y1="86" x2="68" y2="86"/>
+    <line x1="28" y1="98" x2="50" y2="98"/>
+  </g>
+</svg>

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <!-- Note stem -->
+  <line x1="88" y1="22" x2="88" y2="92" stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round"/>
+  <!-- Note flag -->
+  <path d="M88 22C88 22 108 28 108 44C108 56 88 52 88 52" stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  <!-- Note head -->
+  <ellipse cx="72" cy="96" rx="20" ry="14" transform="rotate(-20 72 96)" stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" fill="none"/>
+  <!-- Sound waves -->
+  <path d="M28 52C34 44 34 32 28 24" stroke="var(--fill-0, #BDA7F0)" stroke-width="4" stroke-linecap="round" fill="none"/>
+  <path d="M18 56C28 44 28 28 18 16" stroke="var(--fill-0, #BDA7F0)" stroke-width="4" stroke-linecap="round" fill="none"/>
+</svg>

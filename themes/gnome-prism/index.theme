@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=gnome-prism
+Comment=gnome-prism GNOME theme
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=gnome-prism
+MetacityTheme=Adwaita
+IconTheme=gnome-prism
+CursorTheme=Adwaita
+ButtonLayout=close,minimize,maximize:

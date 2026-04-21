@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Puzzle piece -->
+    <path d="M24 50 H48 C48 42, 56 38, 60 38 C64 38, 72 42, 72 50 H96 V72 C88 72, 84 80, 84 84 C84 88, 88 96, 96 96 V118 H24 V96 C32 96, 36 88, 36 84 C36 80, 32 72, 24 72 Z"/>
+  </g>
+</svg>
