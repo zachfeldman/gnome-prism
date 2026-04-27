@@ -371,9 +371,6 @@ override = f"""
 {begin}
 #dashtopanelTaskbar .dash-item-container .overview-tile .dtp-container,
 #dashtopanelTaskbar .dash-item-container .show-apps {{
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
   min-width: 50px !important;
   min-height: 50px !important;
   border-top: 1px solid #bda7f0 !important;
@@ -383,6 +380,10 @@ override = f"""
   margin: 0 !important;
   padding: 0 !important;
   border-radius: 0 !important;
+  x-align: middle !important;
+  y-align: middle !important;
+  x-expand: true !important;
+  y-expand: true !important;
 }}
 
 #dashtopanelTaskbar .dash-item-container .show-apps,
@@ -418,14 +419,17 @@ override = f"""
   icon-size: 7px !important;
   padding: 7px !important;
   margin: 0 !important;
-  y-align: center !important;
-  x-align: center !important;
+  y-align: middle !important;
+  x-align: middle !important;
+  y-expand: true !important;
+  x-expand: true !important;
   animation: none !important;
 }}
 
 #dashtopanelTaskbar .dash-item-container .overview-tile .dtp-container,
 #dashtopanelTaskbar .dash-item-container .show-apps {{
-  x-align: center !important;
+  x-align: middle !important;
+  y-align: middle !important;
   transition:
     border-color 120ms ease-out,
     box-shadow 120ms ease-out,
@@ -492,6 +496,29 @@ override = f"""
 #dashtopanelTaskbar .highlight-appicon-hover,
 #dashtopanelTaskbar .highlight-appicon-hover * {{
   animation: none !important;
+}}
+
+/* Fedora fix: ensure icons are vertically centered within panel tiles */
+#dashtopanelTaskbar .dash-item-container,
+#dashtopanelTaskbar .overview-tile,
+#dashtopanelTaskbar .dtp-container,
+#dashtopanelTaskbar .app-well-app {{
+  y-align: middle !important;
+  x-align: middle !important;
+  y-expand: true !important;
+}}
+
+#dashtopanelTaskbar StIcon,
+#dashtopanelTaskbar .app-well-app StIcon {{
+  y-align: middle !important;
+  x-align: middle !important;
+}}
+
+.dashtopanelMainPanel,
+.dashtopanelMainPanel #panelLeft,
+.dashtopanelMainPanel #panelCenter,
+.dashtopanelMainPanel #panelRight {{
+  y-align: middle !important;
 }}
 
 .dashtopanelPanel,

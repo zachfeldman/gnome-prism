@@ -779,3 +779,26 @@ stage {
   margin: 0;
   background: transparent;
 }
+
+/* Ensure icons are vertically centered within panel tiles (Fedora fix). */
+#dashtopanelTaskbar .dash-item-container,
+#dashtopanelTaskbar .overview-tile,
+#dashtopanelTaskbar .dtp-container {
+  y-align: middle;
+  x-align: middle;
+  y-expand: true;
+}
+
+#dashtopanelTaskbar .app-well-app,
+#dashtopanelTaskbar .app-well-app .overview-icon,
+#dashtopanelTaskbar StIcon {
+  y-align: middle;
+  x-align: middle;
+}
+
+.dashtopanelMainPanel,
+.dashtopanelMainPanel #panelLeft,
+.dashtopanelMainPanel #panelCenter,
+.dashtopanelMainPanel #panelRight {
+  y-align: middle;
+}
