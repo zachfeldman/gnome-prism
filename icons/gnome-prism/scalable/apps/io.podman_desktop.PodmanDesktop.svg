@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g fill="var(--fill-0, #BDA7F0)">
+    <!-- Podman seal/walrus face simplified -->
+    <circle cx="64" cy="58" r="32"/>
+    <!-- Eyes -->
+    <circle cx="52" cy="52" r="6" fill="#000"/>
+    <circle cx="76" cy="52" r="6" fill="#000"/>
+    <!-- Whisker dots left -->
+    <circle cx="38" cy="68" r="3"/>
+    <circle cx="32" cy="62" r="3"/>
+    <circle cx="32" cy="74" r="3"/>
+    <!-- Whisker dots right -->
+    <circle cx="90" cy="68" r="3"/>
+    <circle cx="96" cy="62" r="3"/>
+    <circle cx="96" cy="74" r="3"/>
+    <!-- Nose/snout -->
+    <ellipse cx="64" cy="68" rx="12" ry="8"/>
+    <!-- Container base -->
+    <rect x="40" y="92" width="48" height="16" rx="2"/>
+    <rect x="46" y="96" width="8" height="8" fill="#000"/>
+    <rect x="60" y="96" width="8" height="8" fill="#000"/>
+    <rect x="74" y="96" width="8" height="8" fill="#000"/>
+  </g>
+</svg>
