@@ -1049,16 +1049,16 @@ if height is not None:
     # stronger upward nudge so icons appear optically centered.
     # Zach's 13\" laptop panel is 2880x1920; give it a stronger lift.
     if height <= 900:
-        icon_offset = -6
-    elif height <= 1200:
         icon_offset = -5
-    elif 1900 <= height <= 2000:
-        icon_offset = -7
-    else:
+    elif height <= 1200:
         icon_offset = -4
+    elif 1900 <= height <= 2000:
+        icon_offset = -6
+    else:
+        icon_offset = -3
 else:
     # Fallback that matches the original development machine feel.
-    icon_offset = -4
+    icon_offset = -3
 
 start = "    _setAppIconPadding() {\n"
 end = "    _setAppIconStyle() {\n"
