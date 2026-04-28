@@ -1233,8 +1233,8 @@ gnome-extensions disable "${DTP_UUID}" >/dev/null 2>&1 || true
 gnome-extensions enable "${DTP_UUID}" >/dev/null 2>&1 || true
 
 echo
-echo "============================================================"
+echo "=== DASH TO PANEL SETUP ==="
 echo "Dash to Panel setup complete."
 echo "If the panel does not move to the bottom immediately,"
 echo "FULLY LOG OUT OF YOUR SESSION AND LOG BACK IN."
-echo "============================================================"
+echo
