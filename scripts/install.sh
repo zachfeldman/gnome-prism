@@ -616,14 +616,20 @@ fi
 
 cat <<EOF
 
+
+============================================================
+
+
 Installation complete.
 GTK theme, Shell theme, and icons have been applied via gsettings.
 If the User Themes extension was just installed, log out and back in
 for the Shell theme to take effect.
 
-Optional Firefox advanced theming:
+To install/reinstall the optional Firefox advanced theming, run the script located 
+here. Firefox may need to be restarted afterwards to apply the changes.
   ${FIREFOX_USERCHROME_SCRIPT}
 
-Optional Vivaldi UI mod:
+To install/reinstall the optional Vivaldi UI mod, run the following script.
   ${VIVALDI_THEME_SCRIPT}
+Note: Vivaldi may need to be signed in to correctly apply the UI mod.
 EOF
