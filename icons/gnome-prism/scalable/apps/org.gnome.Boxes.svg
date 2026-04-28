@@ -1,10 +1,10 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100" fill="none" preserveAspectRatio="xMidYMid meet">
   <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none">
-    <!-- 3D box outline -->
-    <path d="M32 44L64 28L96 44L96 84L64 100L32 84Z"/>
-    <path d="M32 44L64 60L96 44"/>
-    <path d="M64 60L64 100"/>
-    <!-- Inner details suggesting VM/screen -->
-    <rect x="48" y="40" width="24" height="16" fill="var(--fill-0, #BDA7F0)" stroke="none"/>
+    <!-- 3D box outline, scaled to fill viewBox -->
+    <path d="M10 30L50 10L90 30V70L50 90L10 70Z"/>
+    <path d="M10 30L50 50L90 30"/>
+    <path d="M50 50V90"/>
+    <!-- Inner screen element -->
+    <rect x="35" y="22" width="26" height="18" fill="var(--fill-0, #BDA7F0)" stroke="none"/>
   </g>
 </svg>

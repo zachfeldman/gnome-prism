@@ -1,24 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 100" fill="none" preserveAspectRatio="xMidYMid meet">
   <g fill="var(--fill-0, #BDA7F0)">
-    <!-- Podman seal/walrus face simplified -->
-    <circle cx="64" cy="58" r="32"/>
+    <!-- Podman seal/walrus face, scaled to fill viewBox -->
+    <circle cx="50" cy="42" r="38"/>
     <!-- Eyes -->
-    <circle cx="52" cy="52" r="6" fill="#000"/>
-    <circle cx="76" cy="52" r="6" fill="#000"/>
+    <circle cx="36" cy="36" r="7" fill="#000"/>
+    <circle cx="64" cy="36" r="7" fill="#000"/>
     <!-- Whisker dots left -->
-    <circle cx="38" cy="68" r="3"/>
-    <circle cx="32" cy="62" r="3"/>
-    <circle cx="32" cy="74" r="3"/>
+    <circle cx="16" cy="52" r="4"/>
+    <circle cx="8" cy="42" r="4"/>
+    <circle cx="8" cy="62" r="4"/>
     <!-- Whisker dots right -->
-    <circle cx="90" cy="68" r="3"/>
-    <circle cx="96" cy="62" r="3"/>
-    <circle cx="96" cy="74" r="3"/>
+    <circle cx="84" cy="52" r="4"/>
+    <circle cx="92" cy="42" r="4"/>
+    <circle cx="92" cy="62" r="4"/>
     <!-- Nose/snout -->
-    <ellipse cx="64" cy="68" rx="12" ry="8"/>
+    <ellipse cx="50" cy="54" rx="14" ry="10"/>
     <!-- Container base -->
-    <rect x="40" y="92" width="48" height="16" rx="2"/>
-    <rect x="46" y="96" width="8" height="8" fill="#000"/>
-    <rect x="60" y="96" width="8" height="8" fill="#000"/>
-    <rect x="74" y="96" width="8" height="8" fill="#000"/>
+    <rect x="20" y="82" width="60" height="14" rx="2"/>
+    <rect x="28" y="86" width="10" height="6" fill="#000"/>
+    <rect x="45" y="86" width="10" height="6" fill="#000"/>
+    <rect x="62" y="86" width="10" height="6" fill="#000"/>
   </g>
 </svg>
