@@ -552,10 +552,14 @@ fi
 if [[ "${PREFIX}" == "${HOME}" ]] && [[ -f "${TILIX_THEME_SCRIPT}" ]]; then
   echo
   echo "=== TILIX COLOR SCHEME ==="
-  if bash "${TILIX_THEME_SCRIPT}"; then
-    echo "Applied Tilix color scheme."
+  if command -v tilix >/dev/null 2>&1 || [[ -d "${HOME}/.config/tilix" ]]; then
+    if bash "${TILIX_THEME_SCRIPT}"; then
+      echo "Applied Tilix color scheme."
+    else
+      echo "Warning: Tilix color scheme install failed; continuing install." >&2
+    fi
   else
-    echo "Warning: Tilix color scheme install failed; continuing install." >&2
+    echo "Tilix not installed; skipping color scheme setup."
   fi
 fi
 
@@ -575,10 +579,14 @@ fi
 if [[ -f "${VIVALDI_THEME_SCRIPT}" ]]; then
   echo
   echo "=== VIVALDI UI MOD ==="
-  if bash "${VIVALDI_THEME_SCRIPT}" --prefix "${PREFIX}"; then
-    echo "Installed Vivaldi UI mod assets."
+  if command -v vivaldi >/dev/null 2>&1 || command -v vivaldi-stable >/dev/null 2>&1 || [[ -d "${HOME}/.config/vivaldi" ]]; then
+    if bash "${VIVALDI_THEME_SCRIPT}" --prefix "${PREFIX}"; then
+      echo "Installed Vivaldi UI mod assets."
+    else
+      echo "Warning: Vivaldi theme helper failed; continuing install." >&2
+    fi
   else
-    echo "Warning: Vivaldi theme helper failed; continuing install." >&2
+    echo "Vivaldi not installed; skipping UI mod setup."
   fi
 fi
 
