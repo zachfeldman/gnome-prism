@@ -172,7 +172,7 @@ fi
 PROFILE_COUNT=0
 while IFS= read -r profile_path; do
   apply_to_profile "${profile_path}"
-  ((PROFILE_COUNT++))
+  PROFILE_COUNT=$((PROFILE_COUNT + 1))
 done <<< "${ALL_PROFILES}"
 
 echo "Applied Firefox theme to ${PROFILE_COUNT} profile(s)."
