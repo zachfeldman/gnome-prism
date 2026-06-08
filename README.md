@@ -71,8 +71,8 @@ cd gnome-prism
 
 This restarts GNOME Shell and applies all theme changes.
 
-- **Wayland (Fedora default):** You must log out and back in
-- **X11 (Ubuntu default):** You can also press `Alt+F2`, type `r`, and press Enter
+- **Wayland (Fedora and Ubuntu default):** You must log out and back in
+- **X11 (fallback):** You can also press `Alt+F2`, type `r`, and press Enter
 
 ---
 
@@ -169,7 +169,7 @@ Re-run `./scripts/setup_bottom_panel.sh` after logging in. The Dash to Panel ext
 
 ## Contributing
 
-Contributions are welcome! If you have a bug report, feature request, or question, please [file a GitHub issue](https://github.com/zachfeldman/framework-prism/issues).
+Contributions are welcome! If you have a bug report, feature request, or question, please [file a GitHub issue](https://github.com/zachfeldman/gnome-prism/issues).
 
 ## Development Notes
 
@@ -182,3 +182,4 @@ Contributions are welcome! If you have a bug report, feature request, or questio
 - **Gaurav Singh** — theme design
 - **Ross Jernigan** ([@bonkrat](https://github.com/bonkrat)) — design input and guidance
 - **Zach Feldman** ([@zachfeldman](https://github.com/zachfeldman)) — implementation, vibe-coded this into a real Ubuntu theme
+- **Sam Fleming** ([@SamPlaysKeys](https://github.com/SamPlaysKeys)) — added Fedora-specific features, as well as misc fixes

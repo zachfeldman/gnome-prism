@@ -151,43 +151,8 @@ PY
 }
 
 if [[ "${SKIP_INSTALL}" -eq 0 ]]; then
-  DTP_PKG_INSTALLED=false
-
-  if command -v apt-get >/dev/null 2>&1; then
-    # Debian/Ubuntu
-    if dpkg -s gnome-shell-extension-dash-to-panel >/dev/null 2>&1; then
-      echo "Package already installed: gnome-shell-extension-dash-to-panel"
-      DTP_PKG_INSTALLED=true
-    else
-      if ! sudo apt-get update; then
-        echo "Warning: apt-get update failed (likely due to an unrelated repository)." >&2
-        echo "Continuing with cached package metadata..." >&2
-      fi
-
-      if sudo apt-get install -y gnome-shell-extension-dash-to-panel; then
-        DTP_PKG_INSTALLED=true
-      else
-        echo "apt install failed for gnome-shell-extension-dash-to-panel."
-        install_dtp_from_extensions_gnome_org
-      fi
-    fi
-  elif command -v dnf >/dev/null 2>&1; then
-    # Fedora/RHEL
-    if rpm -q gnome-shell-extension-dash-to-panel >/dev/null 2>&1; then
-      echo "Package already installed: gnome-shell-extension-dash-to-panel"
-      DTP_PKG_INSTALLED=true
-    else
-      if sudo dnf install -y gnome-shell-extension-dash-to-panel; then
-        DTP_PKG_INSTALLED=true
-      else
-        echo "dnf install failed for gnome-shell-extension-dash-to-panel."
-        install_dtp_from_extensions_gnome_org
-      fi
-    fi
-  else
-    echo "No supported package manager found (apt or dnf). Trying extensions.gnome.org..."
-    install_dtp_from_extensions_gnome_org
-  fi
+  echo "Installing Dash to Panel from extensions.gnome.org..."
+  install_dtp_from_extensions_gnome_org
 fi
 
 if ! command -v gnome-extensions >/dev/null 2>&1; then
