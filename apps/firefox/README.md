@@ -69,6 +69,5 @@ You can automate the copy + preference step with:
 
 Useful options:
 
-- `--profile-name <name>` target a specific profile name from `profiles.ini`
 - `--profile-path <absolute-path>` target an explicit profile path
 - `--dry-run` preview without writing changes
