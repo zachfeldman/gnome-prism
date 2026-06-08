@@ -182,3 +182,4 @@ Contributions are welcome! If you have a bug report, feature request, or questio
 - **Gaurav Singh** — theme design
 - **Ross Jernigan** ([@bonkrat](https://github.com/bonkrat)) — design input and guidance
 - **Zach Feldman** ([@zachfeldman](https://github.com/zachfeldman)) — implementation, vibe-coded this into a real Ubuntu theme
+- **Sam Fleming** ([@SamPlaysKeys](https://github.com/SamPlaysKeys)) — added Fedora-specific features, as well as misc fixes
