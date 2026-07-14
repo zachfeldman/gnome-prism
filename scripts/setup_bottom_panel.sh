@@ -983,28 +983,33 @@ if _is_esm:
 else:
     _meta_cursor = "imports.gi.Meta.Cursor"
 
-def _detect_primary_height():
+def _detect_primary_resolution():
     try:
         out = subprocess.check_output(["xrandr"], text=True)
     except Exception:
-        return None
+        return (None, None)
 
     m = re.search(r" primary (\d+)x(\d+)\+", out)
     if m:
-        return int(m.group(2))
+        return (int(m.group(1)), int(m.group(2)))
 
     m = re.search(r" connected [^(]*?(\d+)x(\d+)\+", out)
     if m:
-        return int(m.group(2))
+        return (int(m.group(1)), int(m.group(2)))
 
-    return None
+    return (None, None)
 
-height = _detect_primary_height()
+width, height = _detect_primary_resolution()
 if height is not None:
     # Tune per-resolution; smaller/shorter displays get a slightly
     # stronger upward nudge so icons appear optically centered.
     # Zach's 13\" laptop panel is 2880x1920; give it a stronger lift.
-    if height <= 900:
+    if (width, height) == (1440, 900):
+        # Framework Laptop 12: the 12.2" panel reports 1440x900 and is dense
+        # enough that the generic <=900 "shorter screens need more lift" rule
+        # over-corrects, leaving icons visibly too high. Use a gentler nudge.
+        icon_offset = -3
+    elif height <= 900:
         icon_offset = -5
     elif height <= 1200:
         icon_offset = -4
