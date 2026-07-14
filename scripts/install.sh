@@ -153,6 +153,7 @@ FIREFOX_SNAP_DESKTOP_SRC="${FIREFOX_SNAP_DESKTOP_SRC:-/var/lib/snapd/desktop/app
 THUNDERBIRD_SNAP_DESKTOP_SRC="${THUNDERBIRD_SNAP_DESKTOP_SRC:-/var/lib/snapd/desktop/applications/thunderbird_thunderbird.desktop}"
 SNAP_STORE_DESKTOP_SRC="${SNAP_STORE_DESKTOP_SRC:-/var/lib/snapd/desktop/applications/snap-store_snap-store.desktop}"
 SPOTIFY_SNAP_DESKTOP_SRC="${SPOTIFY_SNAP_DESKTOP_SRC:-/var/lib/snapd/desktop/applications/spotify_spotify.desktop}"
+SIGNAL_SNAP_DESKTOP_SRC="${SIGNAL_SNAP_DESKTOP_SRC:-/var/lib/snapd/desktop/applications/signal-desktop_signal-desktop.desktop}"
 FACTORY_RESET_SNAP_DESKTOP_SRC="${FACTORY_RESET_SNAP_DESKTOP_SRC:-/var/lib/snapd/desktop/applications/factory-reset-tools_factory-reset-tools.desktop}"
 FIRMWARE_UPDATER_SNAP_DESKTOP_SRC="${FIRMWARE_UPDATER_SNAP_DESKTOP_SRC:-/var/lib/snapd/desktop/applications/firmware-updater_firmware-updater.desktop}"
 FIRMWARE_UPDATER_APP_SNAP_DESKTOP_SRC="${FIRMWARE_UPDATER_APP_SNAP_DESKTOP_SRC:-/var/lib/snapd/desktop/applications/firmware-updater_firmware-updater-app.desktop}"
@@ -170,10 +171,10 @@ FIREFOX_DESKTOP_DEST="${APPS_DEST}/firefox_firefox.desktop"
 THUNDERBIRD_DESKTOP_DEST="${APPS_DEST}/thunderbird_thunderbird.desktop"
 SNAP_STORE_DESKTOP_DEST="${APPS_DEST}/snap-store_snap-store.desktop"
 SPOTIFY_DESKTOP_DEST="${APPS_DEST}/spotify_spotify.desktop"
+SIGNAL_DESKTOP_DEST="${APPS_DEST}/signal-desktop_signal-desktop.desktop"
 FACTORY_RESET_DESKTOP_DEST="${APPS_DEST}/factory-reset-tools_factory-reset-tools.desktop"
 FIRMWARE_UPDATER_DESKTOP_DEST="${APPS_DEST}/firmware-updater_firmware-updater.desktop"
 FIRMWARE_UPDATER_APP_DESKTOP_DEST="${APPS_DEST}/firmware-updater_firmware-updater-app.desktop"
-YUBICO_DESKTOP_DEST="${APPS_DEST}/com.yubico.yubioath.desktop"
 FIREFOX_USERCHROME_SCRIPT="${SCRIPT_DIR}/apply_firefox_userchrome.sh"
 VIVALDI_THEME_SCRIPT="${SCRIPT_DIR}/apply_vivaldi_theme.sh"
 BOTTOM_PANEL_SCRIPT="${SCRIPT_DIR}/setup_bottom_panel.sh"
@@ -447,10 +448,10 @@ PY
   echo "Installed Spotify desktop override to ${SPOTIFY_DESKTOP_DEST}"
 fi
 
-# Some Yubico desktop entries use absolute icon paths; normalize to icon-theme name.
-if [[ -f "${YUBICO_DESKTOP_SRC}" ]]; then
+# Snap Signal desktop file uses an absolute icon path, which bypasses icon themes.
+if [[ -f "${SIGNAL_SNAP_DESKTOP_SRC}" ]]; then
   mkdir -p "${APPS_DEST}"
-  python3 - <<'PY' "${YUBICO_DESKTOP_SRC}" "${YUBICO_DESKTOP_DEST}"
+  python3 - <<'PY' "${SIGNAL_SNAP_DESKTOP_SRC}" "${SIGNAL_DESKTOP_DEST}"
 import pathlib
 import re
 import sys
@@ -460,13 +461,40 @@ dest = pathlib.Path(sys.argv[2])
 text = src.read_text(encoding="utf-8")
 
 if re.search(r"^Icon=.*$", text, flags=re.M):
+    text = re.sub(r"^Icon=.*$", "Icon=signal-desktop", text, flags=re.M)
+else:
+    text += "\nIcon=signal-desktop\n"
+
+dest.write_text(text, encoding="utf-8")
+PY
+  echo "Installed Signal desktop override to ${SIGNAL_DESKTOP_DEST}"
+fi
+
+# Some Yubico desktop entries use absolute icon paths; normalize to icon-theme name.
+# Recent Yubico Authenticator builds install the launcher as
+# com.yubico.authenticator.desktop; older/snap builds use com.yubico.yubioath.desktop.
+YUBICO_DESKTOP=""
+for _yubi_cand in "${APPS_DEST}/com.yubico.authenticator.desktop" "${YUBICO_DESKTOP_SRC}"; do
+  if [[ -f "${_yubi_cand}" ]]; then YUBICO_DESKTOP="${_yubi_cand}"; break; fi
+done
+if [[ -n "${YUBICO_DESKTOP}" ]]; then
+  mkdir -p "${APPS_DEST}"
+  python3 - <<'PY' "${YUBICO_DESKTOP}"
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+text = path.read_text(encoding="utf-8")
+
+if re.search(r"^Icon=.*$", text, flags=re.M):
     text = re.sub(r"^Icon=.*$", "Icon=com.yubico.yubioath", text, flags=re.M)
 else:
     text += "\nIcon=com.yubico.yubioath\n"
 
-dest.write_text(text, encoding="utf-8")
+path.write_text(text, encoding="utf-8")
 PY
-  echo "Installed Yubico desktop override to ${YUBICO_DESKTOP_DEST}"
+  echo "Set themed icon on Yubico launcher ${YUBICO_DESKTOP}"
 fi
 
 # Override Toshy tray icons with themed versions when Toshy is installed.
@@ -490,8 +518,7 @@ fi
 # Override Yubico Authenticator tray icon with themed version when installed.
 # The app hardcodes an absolute path to its bundled 32x32 PNG for the system tray,
 # so we replace that file directly (after resizing our themed icon).
-YUBICO_DESKTOP_CHECK="${PREFIX}/.local/share/applications/com.yubico.yubioath.desktop"
-if [[ -f "${YUBICO_DESKTOP_CHECK}" ]]; then
+if [[ -n "${YUBICO_DESKTOP}" ]]; then
   echo
   echo "=== APP ICON OVERRIDES (Yubico Authenticator) ==="
   # Copy themed icons into hicolor for desktop/launcher use.
@@ -507,8 +534,8 @@ if [[ -f "${YUBICO_DESKTOP_CHECK}" ]]; then
     gtk-update-icon-cache -q -t -f "${PREFIX}/.local/share/icons/hicolor" || true
   fi
   # Replace the bundled tray icon that the app references by absolute path.
-  YUBICO_EXEC=$(grep -oP '(?<=^Exec=").*(?=")' "${YUBICO_DESKTOP_CHECK}" 2>/dev/null \
-             || grep -oP '(?<=^Exec=)\S+' "${YUBICO_DESKTOP_CHECK}" 2>/dev/null)
+  YUBICO_EXEC=$(grep -oP '(?<=^Exec=").*(?=")' "${YUBICO_DESKTOP}" 2>/dev/null \
+             || grep -oP '(?<=^Exec=)\S+' "${YUBICO_DESKTOP}" 2>/dev/null)
   if [[ -n "${YUBICO_EXEC}" ]]; then
     YUBICO_APP_DIR="$(dirname "${YUBICO_EXEC}")"
     YUBICO_TRAY_ICON="${YUBICO_APP_DIR}/data/flutter_assets/resources/icons/com.yubico.yubioath-32x32.png"

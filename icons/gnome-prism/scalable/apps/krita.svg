@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 128 128" fill="none" preserveAspectRatio="xMidYMid meet">
+  <g stroke="var(--fill-0, #BDA7F0)" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round">
+    <!-- Brush handle -->
+    <path d="M104 34 L94 24 L60 58 L70 68 Z"/>
+    <!-- Ferrule band -->
+    <path d="M64 54 L74 64"/>
+    <!-- Brush head (angled bristles) -->
+    <path d="M60 58 L70 68 C58 82 50 88 44 90 C43 82 47 72 60 58 Z" fill="var(--fill-0, #BDA7F0)" fill-opacity="0.18"/>
+    <!-- Paint swoosh -->
+    <path d="M44 90 C34 98 30 106 41 108 C54 110 69 103 81 94"/>
+  </g>
+</svg>
