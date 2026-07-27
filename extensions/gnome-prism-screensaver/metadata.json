@@ -1,0 +1,19 @@
+{
+  "description": "GNOME Prism screensaver: play a user-selected looping video on GNOME's real lock screen. Forked from Live Lock Screen (https://github.com/nick-redwill/LiveLockScreen).",
+  "name": "GNOME Prism Screensaver",
+  "session-modes": [
+    "user",
+    "unlock-dialog"
+  ],
+  "settings-schema": "org.gnome.shell.extensions.gnome-prism-screensaver",
+  "shell-version": [
+    "46",
+    "47",
+    "48",
+    "49",
+    "50"
+  ],
+  "url": "https://github.com/zachfeldman/gnome-prism",
+  "uuid": "gnome-prism-screensaver@zachfeldman",
+  "version-name": "1.0.0"
+}

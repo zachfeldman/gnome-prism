@@ -89,13 +89,19 @@ ensure_user_themes_extension() {
   fi
 }
 
+WITH_SCREENSAVER=0
+
 usage() {
   cat <<EOF
-Usage: $0 [--prefix <path>] [--help]
+Usage: $0 [--prefix <path>] [--with-screensaver] [--help]
 
 Install ${THEME_NAME} theme files into:
   <prefix>/.themes/${THEME_NAME}
   <prefix>/.icons/${THEME_NAME} (if icon files exist)
+
+  --with-screensaver  Also install the optional GNOME Prism screensaver
+                       extension (video-on-lock-screen). See
+                       scripts/install_screensaver.sh for details.
 EOF
 }
 
@@ -105,6 +111,10 @@ while [[ $# -gt 0 ]]; do
       [[ $# -ge 2 ]] || { echo "Missing value for --prefix" >&2; exit 1; }
       PREFIX="$2"
       shift 2
+      ;;
+    --with-screensaver)
+      WITH_SCREENSAVER=1
+      shift
       ;;
     --help|-h)
       usage
@@ -181,6 +191,7 @@ FIRMWARE_UPDATER_APP_DESKTOP_DEST="${APPS_DEST}/firmware-updater_firmware-update
 FIREFOX_USERCHROME_SCRIPT="${SCRIPT_DIR}/apply_firefox_userchrome.sh"
 VIVALDI_THEME_SCRIPT="${SCRIPT_DIR}/apply_vivaldi_theme.sh"
 BOTTOM_PANEL_SCRIPT="${SCRIPT_DIR}/setup_bottom_panel.sh"
+SCREENSAVER_SCRIPT="${SCRIPT_DIR}/install_screensaver.sh"
 CURSOR_SETTINGS_DIR="${PREFIX}/.config/Cursor/User"
 CURSOR_SETTINGS_DEST="${CURSOR_SETTINGS_DIR}/settings.json"
 
@@ -685,6 +696,19 @@ if [[ "${PREFIX}" == "${HOME}" ]] && [[ -f "${BOTTOM_PANEL_SCRIPT}" ]]; then
   fi
 fi
 
+# Optional screensaver (video-on-lock-screen) extension. Opt-in only via
+# --with-screensaver, since it requires a user-selected video and extra
+# packages rather than being auto-detected like the helpers above.
+if [[ "${WITH_SCREENSAVER}" -eq 1 ]] && [[ -f "${SCREENSAVER_SCRIPT}" ]]; then
+  echo
+  echo "=== SCREENSAVER (optional) ==="
+  if bash "${SCREENSAVER_SCRIPT}" --prefix "${PREFIX}"; then
+    echo "Installed screensaver extension."
+  else
+    echo "Warning: screensaver install failed; continuing install." >&2
+  fi
+fi
+
 cat <<EOF
 
 
@@ -703,4 +727,8 @@ here. Firefox may need to be restarted afterwards to apply the changes.
 To install/reinstall the optional Vivaldi UI mod, run the following script.
   ${VIVALDI_THEME_SCRIPT}
 Note: Vivaldi may need to be signed in to correctly apply the UI mod.
+
+To install the optional video screensaver (plays a video on GNOME's real
+lock screen), re-run with --with-screensaver, or run it standalone:
+  ${SCREENSAVER_SCRIPT}
 EOF

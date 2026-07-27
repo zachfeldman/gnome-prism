@@ -52,6 +52,16 @@ DM_MONO_DIR="${PREFIX}/.local/share/fonts/DMMono"
 GTK4_OVERRIDE_DEST="${PREFIX}/.config/gtk-4.0/gtk.css"
 GHOSTTY_THEME_DEST="${PREFIX}/.config/ghostty/themes/${THEME_NAME}"
 GHOSTTY_CONFIG_DEST="${PREFIX}/.config/ghostty/config"
+SCREENSAVER_UUID="gnome-prism-screensaver@zachfeldman"
+SCREENSAVER_DEST="${PREFIX}/.local/share/gnome-shell/extensions/${SCREENSAVER_UUID}"
+
+# Only attempt to disable the extension for the active user install, not test
+# prefixes, and only if it's actually installed.
+if [[ "${PREFIX}" == "${HOME}" ]] && [[ -d "${SCREENSAVER_DEST}" ]] && command -v gnome-extensions >/dev/null 2>&1; then
+  gnome-extensions disable "${SCREENSAVER_UUID}" 2>/dev/null || true
+fi
+# Never touch any other extension directory; only remove our own UUID.
+rm -rf "${SCREENSAVER_DEST}"
 
 rm -rf "${THEME_DEST_LEGACY}" "${THEME_DEST_XDG}"
 rm -rf "${ICONS_DEST_LEGACY}" "${ICONS_DEST_XDG}"
@@ -117,3 +127,4 @@ echo "  ${YUBICO_DESKTOP_DEST}"
 echo "  ${DM_MONO_DIR}"
 echo "  ${GTK4_OVERRIDE_DEST}"
 echo "  ${GHOSTTY_THEME_DEST}"
+echo "  ${SCREENSAVER_DEST}"

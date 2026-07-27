@@ -181,6 +181,162 @@ Some apps (especially Snaps and Flatpaks) use hardcoded icon paths. The install 
 **Taskbar icons look misaligned (Fedora):**
 Re-run `./scripts/setup_bottom_panel.sh` after logging in. The Dash to Panel extension needs to be fully loaded before the script can apply all settings.
 
+## Screensaver (optional)
+
+GNOME Prism can optionally play a user-selected looping video on GNOME's
+**real, secure lock screen** — a maintained fork of
+[Live Lock Screen](https://github.com/nick-redwill/LiveLockScreen), packaged
+as `extensions/gnome-prism-screensaver/` (UUID
+`gnome-prism-screensaver@zachfeldman`, AGPL-3.0 licensed — see
+`extensions/gnome-prism-screensaver/NOTICE.md`).
+
+**This never replaces, weakens, or bypasses GNOME's authentication.** Locking
+is always performed by GNOME itself (`Main.screenShield.lock()`); the
+extension only changes what's visually shown before you unlock. Interacting
+with the keyboard, mouse, touchpad, or touchscreen always reveals GNOME's
+normal password prompt.
+
+### What it does
+
+- Plays your chosen video full-screen behind GNOME's lock dialog.
+- Optional "clean" mode hides the clock, date, and notifications until you
+  interact, so only the video shows initially.
+- Start it immediately from Quick Settings ("Screensaver") or a configurable
+  keyboard shortcut (default `Super+Shift+L`) — both just trigger a normal
+  GNOME lock.
+- Everything else (loop, scaling, blur/grayscale/pause on prompt,
+  disable-on-battery, keep-awake) is configurable in the extension's
+  preferences.
+
+### Supported GNOME versions
+
+Declared as GNOME Shell 46–50 in `metadata.json`, inherited from the upstream
+Live Lock Screen project's own tested range. GNOME Prism has not
+independently re-verified every one of those versions; if something breaks
+on your version, clean mode and other GNOME-Shell-private-API-dependent
+behavior are designed to fail safe back to normal locking (see Known
+limitations below) rather than leaving you unable to unlock.
+
+### Dependencies
+
+Requires GStreamer's good/bad/ugly plugins and a `gtk4paintablesink`-providing
+package:
+
+```bash
+# Fedora
+sudo dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free \
+  gstreamer1-plugins-ugly gstreamer1-plugins-bad-free-extras gstreamer1-plugin-gtk4
+
+# Ubuntu/Debian
+sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
+# gstreamer1.0-gtk4 is only packaged on Ubuntu 24.10+/newer Debian — not
+# available on Ubuntu 24.04; you'll need to build it from source there.
+sudo apt install gstreamer1.0-gtk4
+```
+
+`scripts/install_screensaver.sh` detects your distro and installs these
+automatically, warning (never silently failing the whole install) if a
+package isn't available for your release.
+
+### Installation
+
+```bash
+./scripts/install.sh --with-screensaver
+# or, standalone:
+./scripts/install_screensaver.sh
+```
+
+This is opt-in only — it's never installed as part of a plain
+`./scripts/install.sh` run, since it needs a user-selected video and extra
+packages.
+
+**Log out and back in afterwards** (required on Wayland — and after every
+update to the extension — for GNOME Shell to load it).
+
+### Selecting a video
+
+```bash
+gnome-extensions prefs gnome-prism-screensaver@zachfeldman
+```
+
+Pick a video file on the General page. GNOME Prism never copies this file
+anywhere; it stays exactly where you put it, and uninstalling never touches
+it.
+
+### Starting it manually
+
+- Quick Settings → "Screensaver" (toggle this off in preferences if you don't
+  want it shown).
+- Keyboard shortcut, default `Super+Shift+L` (configurable, and can be
+  disabled entirely in preferences).
+- Or just lock normally (`Super+L` / `loginctl lock-session`) — the
+  screensaver activates on any lock, not only via the actions above.
+
+### Configuring the shortcut
+
+Open preferences (`gnome-extensions prefs gnome-prism-screensaver@zachfeldman`)
+→ Screensaver page → set or clear the shortcut field, and toggle it on/off.
+
+### Disabling or uninstalling
+
+```bash
+# Disable without removing:
+gnome-extensions disable gnome-prism-screensaver@zachfeldman
+
+# Fully remove (part of the normal uninstall; only removes this extension's
+# own files, never touches other extensions or your video file):
+./scripts/uninstall.sh
+```
+
+### Known limitations
+
+- "Clean" mode (hiding the clock/date/notifications) relies on private GNOME
+  Shell internals (`_showClock`/`_showPrompt` and related actors) that can
+  change between GNOME versions. If they're not found, clean mode is
+  silently skipped and the screensaver falls back to normal, non-clean
+  behavior — locking itself is never affected.
+- Inherited from upstream: possible audio/video desync after suspend/wake,
+  possible clicking/crackling audio on pause/play, and video positioning
+  quirks when monitors are connected/disconnected while locked.
+
+### Troubleshooting
+
+```bash
+# Confirm the extension is installed and its state:
+gnome-extensions info gnome-prism-screensaver@zachfeldman
+
+# Check logs for extension/lock-related messages:
+journalctl --user -b | grep -iE 'gnome-prism|screensaver|lock'
+
+# Confirm the required GStreamer sink is available:
+gst-inspect-1.0 gtk4paintablesink
+```
+
+If nothing plays, first confirm `gst-inspect-1.0 gtk4paintablesink` succeeds,
+then confirm a video is selected in preferences, then check the journal for
+`gnome-prism-screensaver:` log lines.
+
+### Manual test checklist
+
+This feature touches your real lock screen, so verify it end-to-end on a
+real GNOME session before relying on it:
+
+1. Install GNOME Prism with screensaver support.
+2. Log out and back in.
+3. Confirm GNOME Prism and Dash to Panel still work.
+4. Confirm ordinary `Super+L` locking works.
+5. Confirm `loginctl lock-session` works.
+6. Start the screensaver from Quick Settings.
+7. Confirm only the video is initially visible (if clean mode is enabled).
+8. Interact with the keyboard or mouse.
+9. Confirm GNOME's real password prompt appears.
+10. Unlock successfully.
+11. Confirm the extension does not immediately return from unlock-dialog to
+    the normal session.
+12. Test on AC and on battery.
+13. Disable the screensaver extension and confirm normal locking still works.
+14. Uninstall and confirm no lock-screen functionality is broken.
+
 ## Contributing
 
 Contributions are welcome! If you have a bug report, feature request, or question, please [file a GitHub issue](https://github.com/zachfeldman/gnome-prism/issues).
@@ -190,6 +346,9 @@ Contributions are welcome! If you have a bug report, feature request, or questio
 - All public-facing names use `gnome-prism`
 - libadwaita apps may ignore parts of custom GTK theming by design
 - Best visual consistency comes from coordinating shell + GTK + icons + wallpaper
+- The repository is MIT licensed, except `extensions/gnome-prism-screensaver/`,
+  which is AGPL-3.0 (a Live Lock Screen derivative — see that directory's
+  `NOTICE.md`)
 
 ## Ports
 

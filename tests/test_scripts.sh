@@ -7,6 +7,8 @@ UNINSTALL_SCRIPT="${REPO_ROOT}/scripts/uninstall.sh"
 BOTTOM_PANEL_SCRIPT="${REPO_ROOT}/scripts/setup_bottom_panel.sh"
 FIREFOX_USERCHROME_SCRIPT="${REPO_ROOT}/scripts/apply_firefox_userchrome.sh"
 VIVALDI_THEME_SCRIPT="${REPO_ROOT}/scripts/apply_vivaldi_theme.sh"
+SCREENSAVER_SCRIPT="${REPO_ROOT}/scripts/install_screensaver.sh"
+SCREENSAVER_UUID="gnome-prism-screensaver@zachfeldman"
 
 tmpdir="$(mktemp -d)"
 cleanup() {
@@ -20,6 +22,33 @@ bash -n "${UNINSTALL_SCRIPT}"
 bash -n "${BOTTOM_PANEL_SCRIPT}"
 bash -n "${FIREFOX_USERCHROME_SCRIPT}"
 bash -n "${VIVALDI_THEME_SCRIPT}"
+bash -n "${SCREENSAVER_SCRIPT}"
+
+if command -v shellcheck >/dev/null 2>&1; then
+  echo "Running shellcheck on install_screensaver.sh..."
+  shellcheck "${SCREENSAVER_SCRIPT}"
+else
+  echo "shellcheck not found; skipping (optional)."
+fi
+
+echo "Checking install_screensaver.sh does not mix apt and dnf in one branch..."
+python3 - <<'PY' "${SCREENSAVER_SCRIPT}"
+import re
+import sys
+
+text = open(sys.argv[1], encoding="utf-8").read()
+
+# Each distro install function should reference exactly one package manager.
+funcs = re.findall(r"install_packages_\w+\(\) \{(.*?)\n\}", text, flags=re.S)
+if not funcs:
+    raise SystemExit("Could not find install_packages_* functions to check")
+
+for body in funcs:
+    uses_apt = bool(re.search(r"\bapt(-get)?\b", body))
+    uses_dnf = bool(re.search(r"\bdnf\b", body))
+    if uses_apt and uses_dnf:
+        raise SystemExit("Found a branch mixing apt and dnf commands")
+PY
 
 echo "Running install into temporary prefix..."
 fake_snap_dir="${tmpdir}/fake-snap-desktop"
@@ -193,6 +222,46 @@ if re.search(r"^\s*theme\s*=\s*gnome-prism\s*$", text, flags=re.M):
 if "font-size = 12" not in text:
     raise SystemExit("Uninstall clobbered pre-existing Ghostty settings")
 PY
+
+echo "Testing screensaver extension install (optional feature)..."
+ss_tmpdir="${tmpdir}/screensaver-prefix"
+mkdir -p "${ss_tmpdir}"
+ss_ext_dest="${ss_tmpdir}/.local/share/gnome-shell/extensions/${SCREENSAVER_UUID}"
+
+# Metadata uuid must match the directory name it gets installed under.
+python3 - <<'PY' "${REPO_ROOT}/extensions/gnome-prism-screensaver/metadata.json" "${SCREENSAVER_UUID}"
+import json
+import pathlib
+import sys
+
+metadata = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
+expected_uuid = sys.argv[2]
+if metadata.get("uuid") != expected_uuid:
+    raise SystemExit(f"metadata.json uuid {metadata.get('uuid')!r} != expected {expected_uuid!r}")
+PY
+
+# --prefix != HOME, so the script never tries to call gnome-extensions or
+# install distro packages here -- this only exercises file layout/idempotency.
+"${SCREENSAVER_SCRIPT}" --prefix "${ss_tmpdir}" >/dev/null
+"${SCREENSAVER_SCRIPT}" --prefix "${ss_tmpdir}" >/dev/null # idempotency: run twice
+
+test -d "${ss_ext_dest}"
+test -f "${ss_ext_dest}/metadata.json"
+test -f "${ss_ext_dest}/extension.js"
+test -f "${ss_ext_dest}/LICENSE.txt"
+test -f "${ss_ext_dest}/NOTICE.md"
+test -f "${ss_ext_dest}/schemas/gschemas.compiled"
+
+# An unrelated extension directory placed alongside ours must survive uninstall.
+unrelated_ext_dest="${ss_tmpdir}/.local/share/gnome-shell/extensions/some-other-extension@example.com"
+mkdir -p "${unrelated_ext_dest}"
+echo '{"uuid": "some-other-extension@example.com"}' > "${unrelated_ext_dest}/metadata.json"
+
+"${UNINSTALL_SCRIPT}" --prefix "${ss_tmpdir}" >/dev/null
+
+test ! -e "${ss_ext_dest}"
+test -d "${unrelated_ext_dest}"
+test -f "${unrelated_ext_dest}/metadata.json"
 
 echo "Validating Firefox theme assets..."
 test -f "${REPO_ROOT}/apps/firefox/gnome-prism-theme/manifest.json"
