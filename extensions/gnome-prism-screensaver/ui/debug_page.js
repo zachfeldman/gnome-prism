@@ -25,7 +25,8 @@ class LLSDebugPage extends Adw.PreferencesPage {
     _buildDisableColorRow() {
         const row = new Adw.SwitchRow({
             title: 'Disable color conversion',
-            subtitle: 'Enabling this might improve performance but will cause color inaccuracy',
+            subtitle: 'Forces a system-memory video path (slight color inaccuracy, extra CPU copy). ' +
+                'Try this if the video shows black on a hybrid-GPU laptop (e.g. NVIDIA + Intel).',
         });
 
         row.active = !this._settings.get_boolean(Keys.DEBUG_USE_COLOR_ACCURATE);

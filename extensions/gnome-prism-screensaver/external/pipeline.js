@@ -48,14 +48,23 @@ export default class Pipeline {
     }
 
     _initVideoSimple() {
-        // Keeping this just in case users experience performance issues with
-        // new color accurate pipeline
+        // Forces a hard videoconvert -> plain video/x-raw (system memory)
+        // boundary before the sink. Without this, gtk4paintablesink's pad
+        // template also accepts DMABuf/GLMemory caps, so decodebin can still
+        // autoplug a hardware decoder straight into GPU memory. On hybrid-GPU
+        // laptops (e.g. an NVIDIA dGPU alongside an Intel iGPU driving the
+        // panel), that GPU memory can end up unshareable with the compositor
+        // once this extension reparents the render window into the lock
+        // screen, producing a silently-black frame instead of an error. Going
+        // through system memory here avoids that cross-GPU sharing entirely,
+        // at the cost of an extra CPU-side copy.
         console.log("Using simple video pipeline")
 
         if (this._useVideorate) {
             const videoSinkBin = Gst.parse_bin_from_description(
-                `videorate skip-to-first=true ! 
-                video/x-raw,framerate=${this._framerate}/1 ! 
+                `videorate skip-to-first=true !
+                video/x-raw,framerate=${this._framerate}/1 !
+                videoconvert ! video/x-raw !
                 gtk4paintablesink name=sink`,
                 true
             );
@@ -69,12 +78,19 @@ export default class Pipeline {
 
             this._pipeline.set_property('video-sink', videoSinkBin);
         } else {
-            this._videoSink = Gst.ElementFactory.make('gtk4paintablesink', 'video-sink');
+            const videoSinkBin = Gst.parse_bin_from_description(
+                `videoconvert ! video/x-raw ! gtk4paintablesink name=sink`,
+                true
+            );
+            if (!videoSinkBin)
+                throw new Error('Failed to create video sink bin');
+
+            this._videoSink = videoSinkBin.get_by_name('sink');
 
             if (!this._videoSink)
-                throw new Error('Failed to create gtk4paintablesink');
+                throw new Error('Failed to find gtk4paintablesink in video sink bin');
 
-            this._pipeline.set_property('video-sink', this._videoSink);
+            this._pipeline.set_property('video-sink', videoSinkBin);
         }
     }
 

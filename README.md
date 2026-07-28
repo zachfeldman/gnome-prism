@@ -298,6 +298,14 @@ gnome-extensions disable gnome-prism-screensaver@zachfeldman
 - Inherited from upstream: possible audio/video desync after suspend/wake,
   possible clicking/crackling audio on pause/play, and video positioning
   quirks when monitors are connected/disconnected while locked.
+- **Hybrid-GPU laptops (e.g. NVIDIA dGPU + Intel iGPU) may show a black
+  screen instead of video.** The pipeline can decode straight to GPU memory
+  and hand it to `gtk4paintablesink`, which fails silently to share across
+  GPUs once this extension reparents the render window into the lock
+  screen. If you see this, enable "Disable color conversion" on the Debug
+  preferences page — it forces a system-memory (`videoconvert`) path that
+  avoids the cross-GPU sharing at the cost of a small CPU overhead and
+  slight color inaccuracy.
 
 ### Troubleshooting
 
