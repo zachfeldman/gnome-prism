@@ -222,6 +222,7 @@ export default class GnomePrismScreensaverExtension extends Extension {
     // ---------------------------------------------------------------------
 
     _enableLockMode() {
+        warn('_enableLockMode() invoked');
         this._resetPerLockState();
         this._setupForLock();
     }
