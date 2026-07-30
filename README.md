@@ -219,19 +219,18 @@ limitations below) rather than leaving you unable to unlock.
 
 ### Dependencies
 
-Requires GStreamer's good/bad/ugly plugins and a `gtk4paintablesink`-providing
-package:
+Requires GStreamer's good/bad/ugly plugins for broad video codec support.
+The core elements the extension itself needs (`playbin`, `appsink`,
+`videoconvert`, `videoscale`) are part of `gstreamer-plugins-base`, which is
+essentially always already installed:
 
 ```bash
 # Fedora
 sudo dnf install gstreamer1-plugins-good gstreamer1-plugins-bad-free \
-  gstreamer1-plugins-ugly gstreamer1-plugins-bad-free-extras gstreamer1-plugin-gtk4
+  gstreamer1-plugins-ugly gstreamer1-plugins-bad-free-extras
 
 # Ubuntu/Debian
 sudo apt install gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
-# gstreamer1.0-gtk4 is only packaged on Ubuntu 24.10+/newer Debian — not
-# available on Ubuntu 24.04; you'll need to build it from source there.
-sudo apt install gstreamer1.0-gtk4
 ```
 
 `scripts/install_screensaver.sh` detects your distro and installs these
@@ -290,22 +289,19 @@ gnome-extensions disable gnome-prism-screensaver@zachfeldman
 
 ### Known limitations
 
-- "Clean" mode (hiding the clock/date/notifications) relies on private GNOME
-  Shell internals (`_showClock`/`_showPrompt` and related actors) that can
-  change between GNOME versions. If they're not found, clean mode is
-  silently skipped and the screensaver falls back to normal, non-clean
-  behavior — locking itself is never affected.
+- "Clean" mode (hiding the clock/date/notifications) and suppression of
+  GNOME's own lock-transition "curtain" (so the video doesn't briefly go
+  black right after locking) both rely on private GNOME Shell internals
+  that can change between versions. If they're not found, both are silently
+  skipped and the screensaver falls back to normal GNOME behavior — locking
+  itself is never affected.
 - Inherited from upstream: possible audio/video desync after suspend/wake,
-  possible clicking/crackling audio on pause/play, and video positioning
-  quirks when monitors are connected/disconnected while locked.
-- **Hybrid-GPU laptops (e.g. NVIDIA dGPU + Intel iGPU) may show a black
-  screen instead of video.** The pipeline can decode straight to GPU memory
-  and hand it to `gtk4paintablesink`, which fails silently to share across
-  GPUs once this extension reparents the render window into the lock
-  screen. If you see this, enable "Disable color conversion" on the Debug
-  preferences page — it forces a system-memory (`videoconvert`) path that
-  avoids the cross-GPU sharing at the cost of a small CPU overhead and
-  slight color inaccuracy.
+  and possible clicking/crackling audio on pause/play.
+- Video is decoded and rendered directly inside GNOME Shell's own process
+  (see `extensions/gnome-prism-screensaver/NOTICE.md` for why); this avoids
+  the cross-process/cross-GPU rendering issues the original window-based
+  approach could hit, at the cost of a small extra CPU copy per frame to
+  upload decoded frames into the Shell's compositor.
 
 ### Troubleshooting
 
@@ -316,13 +312,14 @@ gnome-extensions info gnome-prism-screensaver@zachfeldman
 # Check logs for extension/lock-related messages:
 journalctl --user -b | grep -iE 'gnome-prism|screensaver|lock'
 
-# Confirm the required GStreamer sink is available:
-gst-inspect-1.0 gtk4paintablesink
+# Confirm the required GStreamer element is available:
+gst-inspect-1.0 appsink
 ```
 
-If nothing plays, first confirm `gst-inspect-1.0 gtk4paintablesink` succeeds,
-then confirm a video is selected in preferences, then check the journal for
-`gnome-prism-screensaver:` log lines.
+If nothing plays, first confirm `gst-inspect-1.0 appsink` succeeds, then
+confirm a video is selected in preferences, then check the journal for
+`gnome-prism-screensaver:` log lines and any `In-process pipeline error`
+messages.
 
 ### Manual test checklist
 
@@ -335,7 +332,8 @@ real GNOME session before relying on it:
 4. Confirm ordinary `Super+L` locking works.
 5. Confirm `loginctl lock-session` works.
 6. Start the screensaver from Quick Settings.
-7. Confirm only the video is initially visible (if clean mode is enabled).
+7. Confirm the video is visible immediately, with no black gap (and, if
+   clean mode is enabled, without the clock/date/notifications overlaid).
 8. Interact with the keyboard or mouse.
 9. Confirm GNOME's real password prompt appears.
 10. Unlock successfully.

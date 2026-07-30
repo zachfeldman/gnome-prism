@@ -12,18 +12,16 @@ import Shell from 'gi://Shell';
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 
-import { Keys } from './enums.js';
-import { PlayerProcess } from './core/player_process.js';
+import { Keys, ScalingMode } from './enums.js';
+import { InProcessVideoRenderer } from './core/in_process_renderer.js';
 
 import { isOnBattery } from './utils/battery.js';
-import { isGtk4PaintableSinkAvailable } from './utils/check_dependencies.js';
 import { sendErrorNotification } from './utils/notifications.js';
 import { SHELL_VERSION } from './utils/shell_version.js';
 import { warn, error } from './utils/logging.js';
 
-const MAX_DIALOG_INJECT_ATTEMPTS = 100;
-const DIALOG_INJECT_INTERVAL = 100;
-const WINDOW_TIMEOUT = 10000;
+const MAX_DIALOG_WAIT_ATTEMPTS = 100;
+const DIALOG_WAIT_INTERVAL = 100;
 
 // GNOME Session Manager idle-inhibit flag (see org.gnome.SessionManager D-Bus docs).
 const INHIBIT_IDLE_FLAG = 8;
@@ -65,39 +63,74 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._resetLockState();
         this._settings = this.getSettings();
 
-        if (Main.sessionMode.currentMode === 'unlock-dialog')
-            this._enableLockMode();
-        else
-            this._enableUserMode();
+        // GNOME Shell does NOT re-invoke enable()/disable() on every
+        // session-mode transition just because both "user" and
+        // "unlock-dialog" are declared in metadata.json -- once enabled for
+        // a mode-set, it keeps running continuously across transitions
+        // within that set. So we track mode changes ourselves for the
+        // lifetime of this single enable() call, rather than depending on
+        // GNOME calling enable()/disable() again per lock/unlock.
+        this._enableUserMode();
+
+        this._lockModeActive = false;
+        this._sessionModeChangedId = Main.sessionMode.connect(
+            'updated', () => this._onSessionModeChanged()
+        );
+        this._onSessionModeChanged();
     }
 
     disable() {
+        if (this._sessionModeChangedId) {
+            Main.sessionMode.disconnect(this._sessionModeChangedId);
+            this._sessionModeChangedId = null;
+        }
+
         this._disableLockMode();
         this._disableUserMode();
         this._settings = null;
     }
 
+    _onSessionModeChanged() {
+        const locked = Main.sessionMode.currentMode === 'unlock-dialog';
+
+        if (locked && !this._lockModeActive) {
+            this._lockModeActive = true;
+            this._enableLockMode();
+        } else if (!locked && this._lockModeActive) {
+            this._lockModeActive = false;
+            this._disableLockMode();
+        }
+    }
+
+    // Called once when the extension is enabled (session start / toggle),
+    // NOT once per lock cycle -- see _resetPerLockState() for that.
     _resetLockState() {
-        this._backgroundCreated = false;
-        this._wrapperActors = {}; // connector -> actor
-        this._windowActors = {};  // connector -> actor
-
-        this._promptShown = false;
-        this._injectionManager = null;
-        this._player = null;
-        this._tapAction = null;
-
-        this._injectRetryId = 0;
-        this._injectAttempts = 0;
-        this._blurEffectTimeoutId = 0;
-
-        this._hideUntilInteraction = false;
-        this._keepAwake = false;
-        this._inhibitCookie = null;
+        this._resetPerLockState();
 
         this._quickSettingsIndicator = null;
         this._keybindingAdded = false;
         this._keybindingSettingsIds = null;
+
+        this._lockModeActive = false;
+        this._sessionModeChangedId = null;
+    }
+
+    // Called at the start of every individual lock cycle. Since enable()
+    // only runs once per session (see _onSessionModeChanged()), state must
+    // be reset here on each new lock, not just once in _resetLockState().
+    _resetPerLockState() {
+        this._videoActors = {}; // monitor index -> container actor
+        this._promptShown = false;
+        this._injectionManager = null;
+        this._renderer = null;
+        this._tapAction = null;
+
+        this._dialogWaitId = 0;
+        this._dialogWaitAttempts = 0;
+
+        this._hideUntilInteraction = false;
+        this._keepAwake = false;
+        this._inhibitCookie = null;
     }
 
     // ---------------------------------------------------------------------
@@ -181,19 +214,14 @@ export default class GnomePrismScreensaverExtension extends Extension {
     }
 
     // ---------------------------------------------------------------------
-    // unlock-dialog (locked) mode: video-on-lock-screen behavior, forked
-    // from Live Lock Screen. See NOTICE.md for what changed vs upstream.
+    // unlock-dialog (locked) mode: renders video directly into GNOME's lock
+    // dialog using an in-process GStreamer appsink -> St.ImageContent
+    // pipeline (see core/in_process_renderer.js for why this replaced the
+    // original Live Lock Screen window-stealing approach).
     // ---------------------------------------------------------------------
 
     _enableLockMode() {
-        if (!isGtk4PaintableSinkAvailable()) {
-            sendErrorNotification(
-                'gtk4paintablesink is not available.' +
-                'See README.md for installation instructions.'
-            );
-            return;
-        }
-
+        this._resetPerLockState();
         this._setupForLock();
     }
 
@@ -210,11 +238,10 @@ export default class GnomePrismScreensaverExtension extends Extension {
             return;
         }
 
-        this._fadeInDuration  = this._settings.get_int(Keys.FADE_IN_DURATION);
+        this._fadeInDuration = this._settings.get_int(Keys.FADE_IN_DURATION);
         this._scalingMode = this._settings.get_int(Keys.SCALING_MODE);
         this._blurRadius = this._settings.get_int(Keys.BLUR_RADIUS);
         this._blurBrightness = this._settings.get_double(Keys.BLUR_BRIGHTNESS);
-        this._forceFullscreen = this._settings.get_boolean(Keys.DEBUG_FORCE_FULLSCREEN);
 
         this._hideUntilInteraction = this._settings.get_boolean(Keys.HIDE_UNTIL_INTERACTION);
         this._keepAwake = this._settings.get_boolean(Keys.KEEP_AWAKE);
@@ -223,7 +250,6 @@ export default class GnomePrismScreensaverExtension extends Extension {
         const loop = this._settings.get_boolean(Keys.LOOPED);
         const useVideorate = this._settings.get_boolean(Keys.USE_VIDEORATE);
         const framerate = this._settings.get_int(Keys.FRAMERATE);
-        const colorAccurate = this._settings.get_boolean(Keys.DEBUG_USE_COLOR_ACCURATE);
 
         this._promptSettings = {
             [Keys.PROMPT_PAUSE]:              this._settings.get_boolean(Keys.PROMPT_PAUSE),
@@ -235,7 +261,7 @@ export default class GnomePrismScreensaverExtension extends Extension {
         };
 
         const themeContext = St.ThemeContext.get_for_stage(global.stage);
-        this._blurRadius  *= themeContext.scale_factor;
+        this._blurRadius *= themeContext.scale_factor;
 
         this._blurEffect = {
             name: 'lockscreen-extension-blur',
@@ -243,74 +269,116 @@ export default class GnomePrismScreensaverExtension extends Extension {
             brightness: this._blurBrightness,
         };
 
-        this._player = new PlayerProcess({
-            playerPath: this.path + '/external/run.js',
-            videoPath,
-            scalingMode: this._scalingMode,
-            loop,
-            volume,
-            useVideorate,
-            framerate,
-            colorAccurate: colorAccurate
+        this._renderer = new InProcessVideoRenderer({
+            videoPath, loop, volume, framerate, useVideorate,
         });
 
         try {
-            this._player.run();
+            this._renderer.init((content, width, height) => {
+                this._videoWidth = width;
+                this._videoHeight = height;
+                this._waitForDialog();
+            });
+            this._renderer.preroll();
         } catch (e) {
-            error('Failed to run video player! Falling back...', e);
-            this._player = null;
-            return;
+            error(`Failed to start in-process video renderer! Falling back: ${e}`);
+            sendErrorNotification(
+                'Screensaver video failed to start. Falling back to the normal ' +
+                'lock screen. See README.md for dependency and troubleshooting info.'
+            );
+            this._renderer = null;
         }
-
-        // Temporarily hide all animations for windows
-        this._injectionManager = new InjectionManager();
-        this._injectionManager.overrideMethod(
-            Main.wm,
-            '_shouldAnimateActor',
-            (original) => {
-                return function(actor, types) {
-                    return false;
-                };
-            }
-        );
-
-        const monitorCount = Main.layoutManager.monitors.length;
-        this._player.waitForWindows(monitorCount, WINDOW_TIMEOUT, (data) => {
-            for (const win of data) {
-                //NOTE: Relying on connector name for better reliability (indices are not static)
-                const title = win.get_title() || '';
-                const match = title.match(/^LLS-Player-(.+)$/);
-                const connector = match ? match[1] : null;
-                this._windowActors[connector] = win.get_compositor_private();
-            }
-
-            this._injectIntoDialog();
-        }, (err) => {
-            error(`Unable to intercept all windows: ${err}`);
-        })
     }
 
-    _injectIntoDialog() {
+    _waitForDialog() {
         const dialog = Main.screenShield._dialog;
-        const gtype = dialog._swipeTracker.constructor.$gtype;
 
         if (!dialog) {
-            if (this._injectAttempts >= MAX_DIALOG_INJECT_ATTEMPTS) {
-                error(`_dialog never appeared after ${MAX_DIALOG_INJECT_ATTEMPTS} attempts, giving up`);
-                this._injectAttempts = 0;
+            if (this._dialogWaitAttempts >= MAX_DIALOG_WAIT_ATTEMPTS) {
+                error(`_dialog never appeared after ${MAX_DIALOG_WAIT_ATTEMPTS} attempts, giving up`);
+                this._dialogWaitAttempts = 0;
                 return;
             }
-            this._injectAttempts++;
-            this._injectRetryId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, DIALOG_INJECT_INTERVAL, () => {
-                this._injectRetryId = 0;
-                this._injectIntoDialog();
+            this._dialogWaitAttempts++;
+            this._dialogWaitId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, DIALOG_WAIT_INTERVAL, () => {
+                this._dialogWaitId = 0;
+                this._waitForDialog();
                 return GLib.SOURCE_REMOVE;
             });
             return;
         }
 
-        this._injectAttempts = 0;
-        this._injectCreateBackground();
+        this._dialogWaitAttempts = 0;
+        this._createVideoActors(dialog);
+        this._injectPromptHooks(dialog);
+        this._initLoginManager();
+        this._startAnimation();
+        this._renderer.play();
+        this._requestKeepAwake();
+
+        // Apply the clean state immediately for the initial locked view.
+        this._applyCleanMode(dialog);
+    }
+
+    // No window/connector/PID matching needed at all -- unlike the old
+    // window-stealing approach, we already know exactly which monitors
+    // exist and can size a native actor per monitor directly.
+    _createVideoActors(dialog) {
+        const content = this._renderer.content;
+
+        Main.layoutManager.monitors.forEach((monitor, index) => {
+            const container = new Clutter.Actor({
+                clip_to_allocation: true,
+                x: monitor.x, y: monitor.y,
+                width: monitor.width, height: monitor.height,
+            });
+
+            const videoActor = new Clutter.Actor({ content });
+            this._positionForScalingMode(videoActor, monitor);
+
+            container.add_child(videoActor);
+            dialog._backgroundGroup.add_child(container);
+            dialog._backgroundGroup.set_child_above_sibling(container, null);
+
+            container.add_effect(new Shell.BlurEffect(this._blurEffect));
+            if (this._promptSettings[Keys.PROMPT_GRAYSCALE]) {
+                container.add_effect_with_name(
+                    'lockscreen-extension-desaturate',
+                    new Clutter.DesaturateEffect({ factor: 0.0 })
+                );
+            }
+
+            container.opacity = 0;
+            this._videoActors[index] = { container, videoActor };
+        });
+    }
+
+    // Emulates CSS-style background-size stretch/contain(fit)/cover using
+    // Clutter's content-gravity plus, for cover, manual oversize+centering
+    // math (Clutter has no built-in "cover" gravity).
+    _positionForScalingMode(videoActor, monitor) {
+        const vw = this._videoWidth, vh = this._videoHeight;
+        const mw = monitor.width, mh = monitor.height;
+
+        if (this._scalingMode === ScalingMode.STRETCH || !vw || !vh) {
+            videoActor.content_gravity = Clutter.ContentGravity.RESIZE_FILL;
+            videoActor.set_position(0, 0);
+            videoActor.set_size(mw, mh);
+            return;
+        }
+
+        const containScale = Math.min(mw / vw, mh / vh);
+        const coverScale = Math.max(mw / vw, mh / vh);
+        const scale = this._scalingMode === ScalingMode.COVER ? coverScale : containScale;
+
+        const w = vw * scale, h = vh * scale;
+        videoActor.content_gravity = Clutter.ContentGravity.RESIZE_FILL;
+        videoActor.set_size(w, h);
+        videoActor.set_position((mw - w) / 2, (mh - h) / 2);
+    }
+
+    _injectPromptHooks(dialog) {
+        this._injectionManager = new InjectionManager();
 
         this._injectionManager.overrideMethod(
             dialog, '_showPrompt',
@@ -327,18 +395,6 @@ export default class GnomePrismScreensaverExtension extends Extension {
             }
         );
 
-        // Removing the existing signal to use our custom one
-        const swipeSignalId = GObject.signal_lookup('end', gtype);
-        dialog._swipeTracker.disconnect(swipeSignalId);
-
-        dialog._swipeTracker.connectObject('end', (...args) => {
-            dialog._swipeEnd(...args);
-            if (dialog._activePage == dialog._clock)
-                this._onPromptHide();
-            else
-                this._onPromptShow();
-        }, this);
-
         this._injectionManager.overrideMethod(
             dialog, '_showClock',
             (original) => {
@@ -353,7 +409,23 @@ export default class GnomePrismScreensaverExtension extends Extension {
             }
         );
 
-        //NOTE: Replacing TapAction with a fresh one if exists (for gnome 48 and older)
+        if (dialog._swipeTracker) {
+            const gtype = dialog._swipeTracker.constructor.$gtype;
+            const swipeSignalId = GObject.signal_lookup('end', gtype);
+            dialog._swipeTracker.disconnect(swipeSignalId);
+
+            dialog._swipeTracker.connectObject('end', (...args) => {
+                dialog._swipeEnd(...args);
+                if (dialog._activePage == dialog._clock)
+                    this._onPromptHide();
+                else
+                    this._onPromptShow();
+            }, this);
+        }
+
+        // Replacing TapAction with a fresh one if it exists (needed on
+        // GNOME 48 and older; newer versions handle tap-to-reveal without
+        // this shim).
         this._tapAction = (SHELL_VERSION < 49) ? new Clutter.TapAction() : null;
         if (this._tapAction) {
             this._tapAction.connectObject(
@@ -361,24 +433,48 @@ export default class GnomePrismScreensaverExtension extends Extension {
             );
         }
 
-        dialog._updateBackgrounds();
-
-        // Apply the clean state immediately for the initial locked view,
-        // in case _showClock isn't invoked again right after this injection.
-        this._applyCleanMode(dialog);
+        this._suppressLockCurtain();
     }
 
-    _injectCreateBackground() {
-        this._injectionManager.overrideMethod(
-            Main.screenShield._dialog, '_createBackground',
-            (original) => {
-                const self = this;
-                return function(monitorIndex) {
-                    original.call(this, monitorIndex);
-                    self._handleMonitor(monitorIndex);
-                };
+    // GNOME's own ScreenShield.lock() unconditionally schedules a brief
+    // "curtain" fade-to-black (Main.screenShield._shortLightbox) on every
+    // lock, as a privacy transition -- it sits in Main.uiGroup, above the
+    // lock dialog and our video, and only lifts once the user interacts.
+    // This is normal GNOME behavior on every lock, not specific to us, but
+    // it defeats the point of a screensaver (video should stay visible,
+    // not go black). Since Main.uiGroup/_shortLightbox are private APIs
+    // that can move between versions, this is guarded like clean mode: if
+    // unavailable, we skip suppression rather than risk breaking the lock.
+    _suppressLockCurtain() {
+        try {
+            const shield = Main.screenShield;
+            // _shortLightbox is the lock-transition curtain -- always
+            // suppressed, since a screensaver going black defeats its own
+            // purpose regardless of power settings. _longLightbox is the
+            // idle-dim (already normally prevented by our keep-awake
+            // inhibitor); only suppressed here too if the user actually
+            // asked to keep the display awake, so we don't override their
+            // power preference otherwise.
+            const targets = this._keepAwake
+                ? ['_shortLightbox', '_longLightbox']
+                : ['_shortLightbox'];
+
+            for (const name of targets) {
+                const lightbox = shield?.[name];
+                if (!lightbox)
+                    continue;
+
+                this._injectionManager.overrideMethod(
+                    lightbox, 'lightOn',
+                    () => function() { /* suppressed while screensaver is visible */ }
+                );
+                // In case a fade was already scheduled/mid-flight before we
+                // got here, make sure it isn't left visibly opaque.
+                lightbox.opacity = 0;
             }
-        );
+        } catch (e) {
+            warn(`Failed to suppress lock-transition curtain, falling back to normal GNOME behavior: ${e}`);
+        }
     }
 
     // ---------------------------------------------------------------------
@@ -387,8 +483,8 @@ export default class GnomePrismScreensaverExtension extends Extension {
     // soon as the user interacts. dialog._clock / dialog._notificationsBox
     // are private GNOME Shell APIs that can move between versions, so every
     // access here is guarded — if they're missing, clean mode is silently
-    // skipped and the normal (non-clean) Live Lock Screen behavior is used
-    // instead, rather than risking a broken lock screen.
+    // skipped and the screensaver falls back to normal, non-clean behavior
+    // instead of risking a broken lock screen.
     // ---------------------------------------------------------------------
 
     _getCleanModeActors(dialog) {
@@ -483,13 +579,15 @@ export default class GnomePrismScreensaverExtension extends Extension {
         if (this._promptShown) return;
         this._promptShown = true;
 
+        const containers = Object.values(this._videoActors).map(v => v.container);
+
         if (this._promptSettings[Keys.PROMPT_CHANGE_BLUR]) {
             const radius = this._promptSettings[Keys.PROMPT_BLUR_RADIUS];
             const brightness = radius ? this._promptSettings[Keys.PROMPT_BLUR_BRIGHTNESS] : 1;
 
             // Adding a slight timeout helps get rid of video stutters
             this._blurEffectTimeoutId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 10, () => {
-                Object.values(this._wrapperActors).forEach(actor => {
+                containers.forEach(actor => {
                     actor.ease_property('@effects.lockscreen-extension-blur.radius', radius, {
                         duration: this._promptSettings[Keys.PROMPT_BLUR_ANIM_DURATION],
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
@@ -498,35 +596,36 @@ export default class GnomePrismScreensaverExtension extends Extension {
                         duration: this._promptSettings[Keys.PROMPT_BLUR_ANIM_DURATION],
                         mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                     });
-                })
+                });
 
                 return GLib.SOURCE_REMOVE;
             });
         }
 
         if (this._promptSettings[Keys.PROMPT_GRAYSCALE]) {
-            Object.values(this._wrapperActors).forEach(actor => {
+            containers.forEach(actor => {
                 actor.ease_property('@effects.lockscreen-extension-desaturate.factor', 1.0, {
                     duration: this._promptSettings[Keys.PROMPT_BLUR_ANIM_DURATION],
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 });
-            })
+            });
         }
 
         if (this._promptSettings[Keys.PROMPT_PAUSE])
-            this._player?.pause();
-
+            this._renderer?.pause();
     }
 
     _onPromptHide() {
         if (!this._promptShown) return;
         this._promptShown = false;
 
+        const containers = Object.values(this._videoActors).map(v => v.container);
+
         if (this._promptSettings[Keys.PROMPT_CHANGE_BLUR]) {
             const radius = this._blurRadius;
             const brightness = radius ? this._blurBrightness : 1;
 
-            Object.values(this._wrapperActors).forEach(actor => {
+            containers.forEach(actor => {
                 actor.ease_property('@effects.lockscreen-extension-blur.radius', radius, {
                     duration: this._promptSettings[Keys.PROMPT_BLUR_ANIM_DURATION],
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
@@ -539,124 +638,20 @@ export default class GnomePrismScreensaverExtension extends Extension {
         }
 
         if (this._promptSettings[Keys.PROMPT_GRAYSCALE]) {
-            Object.values(this._wrapperActors).forEach(actor => {
+            containers.forEach(actor => {
                 actor.ease_property('@effects.lockscreen-extension-desaturate.factor', 0.0, {
                     duration: this._promptSettings[Keys.PROMPT_BLUR_ANIM_DURATION],
                     mode: Clutter.AnimationMode.EASE_OUT_QUAD,
                 });
-            })
+            });
         }
 
         if (this._promptSettings[Keys.PROMPT_PAUSE])
-            this._player?.play();
-    }
-
-    _handleMonitor(monitorIndex) {
-        let targetConnector = null;
-        const monitorManager = global.backend.get_monitor_manager();
-
-        for (let connector of Object.keys(this._windowActors)) {
-            const idx = monitorManager.get_monitor_for_connector(connector);
-            if (idx == monitorIndex) {
-                targetConnector = connector;
-                break;
-            }
-        }
-
-        if (!targetConnector) {
-            warn(`Actor not found for monitor ${monitorIndex}! Skipping...`);
-            return;
-        }
-
-        if (targetConnector in this._wrapperActors) {
-            warn(`Wrapper already exists for monitor ${targetConnector}, skipping`);
-            return;
-        }
-
-        const isLastMonitor = monitorIndex === Main.layoutManager.monitors.length - 1;
-        const monitor = Main.layoutManager.monitors[monitorIndex];
-        const windowActor = this._windowActors[targetConnector];
-
-        if (windowActor) {
-            const parent = windowActor.get_parent();
-            if (parent) parent.remove_child(windowActor);
-
-            const wrapper = new Clutter.Actor();
-
-            Main.screenShield._dialog._backgroundGroup.add_child(wrapper);
-            Main.screenShield._dialog._backgroundGroup.set_child_above_sibling(wrapper, null);
-
-            wrapper.add_effect(new Shell.BlurEffect(this._blurEffect));
-
-            // Adding color desaturation effect if needed
-            if (this._promptSettings[Keys.PROMPT_GRAYSCALE]) {
-                wrapper.add_effect_with_name(
-                    'lockscreen-extension-desaturate',
-                    new Clutter.DesaturateEffect({ factor: 0.0 })
-                );
-            }
-
-            if (!this._backgroundCreated)
-                wrapper.opacity = 0;
-
-            wrapper.add_child(windowActor);
-            wrapper.set_child_above_sibling(windowActor, null);
-            wrapper.connectObject('destroy', () => {
-                const p = windowActor.get_parent();
-                if (p) p.remove_child(windowActor);
-                global.window_group.add_child(windowActor);
-                delete this._wrapperActors[targetConnector];
-            });
-
-            if (this._forceFullscreen) {
-                wrapper.set_position(0, 0);
-
-                const win = windowActor.get_meta_window();
-                win.move_to_monitor(monitorIndex);
-                win.make_fullscreen();
-
-            } else {
-                wrapper.set_position(monitor.x, monitor.y);
-                wrapper.set_size(monitor.width, monitor.height);
-                wrapper.set_clip_to_allocation(true);
-
-                // NOTE:
-                // This might look like an overkill,
-                // but you really need to aggressively position actors on any
-                // size/position change
-                const fixPositionAndScale = () => {
-                    windowActor.set_translation(
-                        -windowActor.x, -windowActor.y, 0
-                    );
-                    windowActor.set_pivot_point(0, 0);
-                    windowActor.set_scale(1, 1);
-                };
-                windowActor.connectObject('notify::x', fixPositionAndScale, this);
-                windowActor.connectObject('notify::y', fixPositionAndScale, this);
-                windowActor.connectObject('notify::width', fixPositionAndScale, this);
-                windowActor.connectObject('notify::height', fixPositionAndScale, this);
-
-                fixPositionAndScale();
-            }
-
-            this._wrapperActors[targetConnector] = wrapper;
-
-        } else {
-            warn(`No window actor for monitor ${targetConnector}, skipping`);
-        }
-
-        if (!this._backgroundCreated && isLastMonitor) {
-            this._initLoginManager();
-            this._startAnimation();
-            this._player.play();
-            this._requestKeepAwake();
-
-            this._backgroundCreated = true;
-        }
+            this._renderer?.play();
     }
 
     _startAnimation() {
-        Object.values(this._wrapperActors).forEach(actor => actor.ease({
+        Object.values(this._videoActors).forEach(({ container }) => container.ease({
             opacity: 255,
             duration: this._fadeInDuration,
             mode: Clutter.AnimationMode.EASE_IN_QUAD,
@@ -666,25 +661,22 @@ export default class GnomePrismScreensaverExtension extends Extension {
     _initLoginManager() {
         this._loginManager = LoginManager.getLoginManager();
         this._loginManager.connectObject('prepare-for-sleep', (_manager, aboutToSleep) => {
-            if (!this._player) return;
-            aboutToSleep ? this._player.pause() : this._player.play();
+            if (!this._renderer) return;
+            aboutToSleep ? this._renderer.pause() : this._renderer.play();
         }, this);
     }
 
     _disableLockMode() {
-        /*
-         * User unlocked the screen.
-         * Stopping the videoplayblack and cleaning everything up
-        */
-        if (this._injectRetryId) {
-            GLib.source_remove(this._injectRetryId);
-            this._injectRetryId = 0;
+        // User unlocked the screen. Stop the video and clean everything up.
+        if (this._dialogWaitId) {
+            GLib.source_remove(this._dialogWaitId);
+            this._dialogWaitId = 0;
         }
         if (this._blurEffectTimeoutId) {
             GLib.source_remove(this._blurEffectTimeoutId);
             this._blurEffectTimeoutId = 0;
         }
-        this._injectAttempts = 0;
+        this._dialogWaitAttempts = 0;
 
         try {
             this._restoreCleanMode(Main.screenShield._dialog);
@@ -693,32 +685,25 @@ export default class GnomePrismScreensaverExtension extends Extension {
         Main.screenShield._dialog?._swipeTracker?.disconnectObject(this);
         this._tapAction?.disconnectObject(this);
 
-        // Return all window actors to window_group before destroying
-        for (const windowActor of Object.values(this._windowActors)) {
-            const parent = windowActor.get_parent();
-            if (parent) parent.remove_child(windowActor);
-
-            windowActor.disconnectObject(this);
-            global.window_group.add_child(windowActor);
-            windowActor.hide();
-        }
-        this._windowActors = {};
-
-        this._player?.destroy();
-        this._player = null;
+        this._renderer?.destroy();
+        this._renderer = null;
 
         this._injectionManager?.clear();
         this._injectionManager = null;
 
         this._loginManager?.disconnectObject(this);
 
-        Object.values(this._wrapperActors).forEach(actor => {
-            actor.disconnectObject(this);
-            actor.remove_effect_by_name('lockscreen-extension-blur');
-            actor.remove_effect_by_name('lockscreen-extension-desaturate');
-            actor.destroy()
-        })
-        this._wrapperActors = {};
+        Object.values(this._videoActors).forEach(({ container }) => {
+            try {
+                container.disconnectObject(this);
+                container.remove_effect_by_name('lockscreen-extension-blur');
+                container.remove_effect_by_name('lockscreen-extension-desaturate');
+                container.destroy();
+            } catch (e) {
+                warn(`Failed to tear down a video actor during cleanup: ${e}`);
+            }
+        });
+        this._videoActors = {};
 
         this._releaseKeepAwake();
     }

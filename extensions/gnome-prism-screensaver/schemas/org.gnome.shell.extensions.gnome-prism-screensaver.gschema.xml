@@ -76,19 +76,6 @@
             <summary>Background video blur change animation duration</summary>
         </key>
 
-        <key name="debug-use-color-accurate" type="b">
-            <default>true</default>
-            <summary>Whether to use color accurate pipeline with conversion</summary>
-        </key>
-        <key name="debug-force-fullscreen" type="b">
-            <default>false</default>
-            <summary>Whether to force fullscreen on player windows (not recommended)</summary>
-        </key>
-        <key name="debug-force-gif-support" type="b">
-            <default>false</default>
-            <summary>Whether to force GIF support on older gnome versions (not recommended)</summary>
-        </key>
-
         <key name="hide-interface-until-interaction" type="b">
             <default>true</default>
             <summary>Clean screensaver mode</summary>

@@ -21,8 +21,9 @@ Installs into:
 
 This script:
   - detects your distro (Ubuntu/Debian via apt, Fedora via dnf) and installs
-    the GStreamer plugins the extension needs, warning (not failing) if a
-    package is unavailable for your distro/version;
+    the GStreamer good/bad/ugly plugin packages the extension needs for
+    broad video codec support, warning (not failing) if a package is
+    unavailable for your distro/version;
   - copies the extension and compiles its GSettings schema;
   - enables the extension via gnome-extensions, or queues it to enable on
     next login if GNOME Shell hasn't loaded it yet (Wayland).
@@ -70,15 +71,6 @@ install_packages_apt() {
   sudo "${pkg_cmd}" -y install \
     gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly \
     || echo "Warning: failed to install one or more core GStreamer plugin packages." >&2
-
-  # gstreamer1.0-gtk4 is only packaged on Ubuntu 24.10+ / newer Debian; it does
-  # not exist on Ubuntu 24.04. Try it, but only warn (never fail the install)
-  # if it's not available for this release.
-  if ! sudo "${pkg_cmd}" -y install gstreamer1.0-gtk4 2>/dev/null; then
-    echo "Warning: gstreamer1.0-gtk4 is not available for this Ubuntu/Debian release" >&2
-    echo "(known gap on Ubuntu 24.04 and older). The screensaver requires it." >&2
-    echo "You may need to build it from source or use a newer release. See README.md." >&2
-  fi
 }
 
 install_packages_dnf() {
@@ -86,7 +78,6 @@ install_packages_dnf() {
   sudo dnf install -y \
     gstreamer1-plugins-good gstreamer1-plugins-bad-free \
     gstreamer1-plugins-ugly gstreamer1-plugins-bad-free-extras \
-    gstreamer1-plugin-gtk4 \
     || echo "Warning: failed to install one or more GStreamer packages via dnf." >&2
 }
 
@@ -101,18 +92,19 @@ elif command -v dnf >/dev/null 2>&1; then
   install_packages_dnf
 else
   echo "Warning: no supported package manager (apt/dnf) detected." >&2
-  echo "Install GStreamer good/bad/ugly plugins and a gtk4paintablesink-providing" >&2
-  echo "package for your distribution manually. See README.md for details." >&2
+  echo "Install GStreamer's good/bad/ugly plugin packages for your distribution" >&2
+  echo "manually. See README.md for details." >&2
 fi
 
 if [[ "${PREFIX}" == "${HOME}" ]] && command -v gst-inspect-1.0 >/dev/null 2>&1; then
-  if ! gst-inspect-1.0 gtk4paintablesink >/dev/null 2>&1; then
-    echo "Warning: gtk4paintablesink is not available after package installation." >&2
-    echo "The screensaver will refuse to activate until this is resolved." >&2
-    echo "Run 'gst-inspect-1.0 gtk4paintablesink' to check again after fixing your setup." >&2
+  if ! gst-inspect-1.0 appsink >/dev/null 2>&1; then
+    echo "Warning: the GStreamer 'appsink' element is not available after package" >&2
+    echo "installation. The screensaver will refuse to activate until this is" >&2
+    echo "resolved (it's normally part of gstreamer1.0-plugins-base / gstreamer1-plugins-base)." >&2
+    echo "Run 'gst-inspect-1.0 appsink' to check again after fixing your setup." >&2
   fi
 elif [[ "${PREFIX}" == "${HOME}" ]]; then
-  echo "Note: gst-inspect-1.0 not found; skipping gtk4paintablesink availability check." >&2
+  echo "Note: gst-inspect-1.0 not found; skipping dependency availability check." >&2
 fi
 
 EXT_DEST_DIR="${PREFIX}/.local/share/gnome-shell/extensions"

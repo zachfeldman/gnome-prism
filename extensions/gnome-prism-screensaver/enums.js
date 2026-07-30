@@ -20,10 +20,6 @@ export const Keys = {
     PROMPT_BLUR_BRIGHTNESS: "prompt-blur-brightness",
     PROMPT_BLUR_ANIM_DURATION: "prompt-blur-anim-duration",
 
-    DEBUG_USE_COLOR_ACCURATE: "debug-use-color-accurate",
-    DEBUG_FORCE_FULLSCREEN: "debug-force-fullscreen",
-    DEBUG_FORCE_GIF_SUPPORT: "debug-force-gif-support",
-
     HIDE_UNTIL_INTERACTION: "hide-interface-until-interaction",
     SHOW_START_ACTION: "show-start-action",
     KEYBINDING_ENABLED: "keybinding-enabled",
