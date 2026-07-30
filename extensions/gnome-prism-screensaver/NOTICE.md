@@ -27,6 +27,9 @@ Upstream project: https://github.com/nick-redwill/LiveLockScreen
   upstream already uses for its blur/grayscale/pause behavior. Falls back to
   normal (non-clean) behavior if the relevant private API isn't found on the
   running GNOME Shell version.
+- New folder-rotation mode: instead of a single video file, point at a
+  folder and the extension picks a different video from it (sequential or
+  random order) each time the screensaver starts.
 - New "keep display awake while screensaver is visible" preference, backed
   by an `org.gnome.SessionManager` idle inhibitor, plus suppression of
   GNOME's own lock-transition "curtain" overlay (`ScreenShield._shortLightbox`)

@@ -2,6 +2,10 @@ export const Keys = {
     DISABLE_ON_BATTERY: "general-disable-on-battery",
 
     VIDEO_PATH: "background-video-path",
+    VIDEO_DIRECTORY_PATH: "video-directory-path",
+    VIDEO_ROTATION_ENABLED: "video-rotation-enabled",
+    VIDEO_ROTATION_ORDER: "video-rotation-order",
+    VIDEO_ROTATION_INDEX: "video-rotation-index",
     SCALING_MODE: "background-video-scaling-mode",
     USE_VIDEORATE: "background-video-use-videorate",
     FRAMERATE: "background-video-framerate",
@@ -31,4 +35,9 @@ export const ScalingMode = {
     STRETCH: 0,
     FIT: 1,
     COVER: 2,
+};
+
+export const RotationOrder = {
+    SEQUENTIAL: 0,
+    RANDOM: 1,
 };

@@ -16,6 +16,7 @@ import { Keys, ScalingMode } from './enums.js';
 import { InProcessVideoRenderer } from './core/in_process_renderer.js';
 
 import { isOnBattery } from './utils/battery.js';
+import { pickNextVideoPath } from './utils/video_directory.js';
 import { sendErrorNotification } from './utils/notifications.js';
 import { SHELL_VERSION } from './utils/shell_version.js';
 import { warn, error } from './utils/logging.js';
@@ -225,6 +226,38 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._setupForLock();
     }
 
+    // Returns the video file to play for this lock cycle: either the single
+    // configured file, or -- if directory rotation is enabled -- the next
+    // file from the configured directory (sequential or random order),
+    // persisting the chosen index in settings so sequential order keeps
+    // advancing across locks and sessions.
+    _pickVideoPath() {
+        const rotationEnabled = this._settings.get_boolean(Keys.VIDEO_ROTATION_ENABLED);
+        const directoryPath = this._settings.get_string(Keys.VIDEO_DIRECTORY_PATH);
+
+        if (!rotationEnabled || !directoryPath)
+            return this._settings.get_string(Keys.VIDEO_PATH);
+
+        const order = this._settings.get_int(Keys.VIDEO_ROTATION_ORDER);
+        const lastIndex = this._settings.get_int(Keys.VIDEO_ROTATION_INDEX);
+
+        let picked;
+        try {
+            picked = pickNextVideoPath(directoryPath, order, lastIndex);
+        } catch (e) {
+            warn(`Failed to read video rotation directory "${directoryPath}": ${e}`);
+            return null;
+        }
+
+        if (!picked) {
+            warn(`No video files found in rotation directory "${directoryPath}"`);
+            return null;
+        }
+
+        this._settings.set_int(Keys.VIDEO_ROTATION_INDEX, picked.index);
+        return picked.path;
+    }
+
     _setupForLock() {
         const disableOnBatter = this._settings.get_boolean(Keys.DISABLE_ON_BATTERY);
         if (disableOnBatter && isOnBattery()) {
@@ -232,7 +265,7 @@ export default class GnomePrismScreensaverExtension extends Extension {
             return;
         }
 
-        const videoPath = this._settings.get_string(Keys.VIDEO_PATH);
+        const videoPath = this._pickVideoPath();
         if (!videoPath) {
             warn('Video not set, falling back');
             return;

@@ -19,6 +19,9 @@ class LLSGeneralPage extends Adw.PreferencesPage {
 
         const group = new Adw.PreferencesGroup();
         group.add(this._buildPathRow());
+        group.add(this._buildRotationEnabledRow());
+        group.add(this._buildDirectoryPathRow());
+        group.add(this._buildRotationOrderRow());
         group.add(this._buildScalingRow());
         group.add(this._buildVolumeRow());
         group.add(this._buildLoopRow());
@@ -97,6 +100,77 @@ class LLSGeneralPage extends Adw.PreferencesPage {
         row.connect('activated', () => this._openFileDialog(row));
 
         return row;
+    }
+
+    _buildRotationEnabledRow() {
+        const row = new Adw.SwitchRow({
+            title: 'Rotate videos from a folder',
+            subtitle: 'Play a different video from a folder each time the screensaver starts, instead of the single file above',
+        });
+        this._settings.bind(Keys.VIDEO_ROTATION_ENABLED, row, 'active', Gio.SettingsBindFlags.DEFAULT);
+        return row;
+    }
+
+    _buildDirectoryPathRow() {
+        const path = this._settings.get_string(Keys.VIDEO_DIRECTORY_PATH);
+
+        const row = new Adw.ActionRow({
+            title: 'Folder',
+            subtitle: path !== '' ? path : 'None',
+        });
+
+        const button = new Adw.ButtonContent({
+            icon_name: 'folder-open-symbolic',
+            label: 'Browse',
+        });
+
+        row.activatable_widget = button;
+        row.add_suffix(button);
+        row.connect('activated', () => this._openFolderDialog(row));
+
+        this._settings.bind(Keys.VIDEO_ROTATION_ENABLED, row, 'sensitive', Gio.SettingsBindFlags.GET);
+
+        return row;
+    }
+
+    _buildRotationOrderRow() {
+        const row = new Adw.ComboRow({
+            title: 'Rotation order',
+            model: new Gtk.StringList({
+                strings: ['Sequential', 'Random'],
+            }),
+        });
+
+        row.set_selected(this._settings.get_int(Keys.VIDEO_ROTATION_ORDER));
+        row.connect('notify::selected', r => {
+            this._settings.set_int(Keys.VIDEO_ROTATION_ORDER, r.selected);
+        });
+
+        this._settings.bind(Keys.VIDEO_ROTATION_ENABLED, row, 'sensitive', Gio.SettingsBindFlags.GET);
+
+        return row;
+    }
+
+    _openFolderDialog(row) {
+        const dialog = new Gtk.FileDialog({ title: 'Select Video Folder' });
+
+        const directoryPath = this._settings.get_string(Keys.VIDEO_DIRECTORY_PATH);
+        if (directoryPath)
+            dialog.set_initial_folder(Gio.File.new_for_path(directoryPath));
+
+        const window = row.get_root();
+        dialog.select_folder(window, null, (d, result) => {
+            try {
+                const file = d.select_folder_finish(result);
+                if (file) {
+                    row.subtitle = file.get_path();
+                    this._settings.set_string(Keys.VIDEO_DIRECTORY_PATH, file.get_path());
+                    this._settings.set_int(Keys.VIDEO_ROTATION_INDEX, -1);
+                }
+            } catch (e) {
+                error(`Error selecting folder: ${e}`);
+            }
+        });
     }
 
     _openFileDialog(row) {

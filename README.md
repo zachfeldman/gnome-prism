@@ -199,6 +199,9 @@ normal password prompt.
 ### What it does
 
 - Plays your chosen video full-screen behind GNOME's lock dialog.
+- Optionally rotate between videos in a folder instead of playing a single
+  file — sequential (in order, resuming where it left off) or random,
+  picking a new one each time the screensaver starts.
 - Optional "clean" mode hides the clock, date, and notifications until you
   interact, so only the video shows initially.
 - Start it immediately from Quick Settings ("Screensaver") or a configurable
