@@ -35,6 +35,7 @@ export class InProcessVideoRenderer {
         this._onReady = null;
         this._coglContext = null;
         this._pollId = 0;
+        this._watchdogId = 0;
     }
 
     // onReady(content, width, height) is called once, the first time a
@@ -127,6 +128,8 @@ export class InProcessVideoRenderer {
                     this._content = St.ImageContent.new_with_preferred_size(width, height);
                     this._width = width;
                     this._height = height;
+                    this._clearWatchdog();
+                    warn(`First frame decoded (${width}x${height}), handing off to lock dialog`);
                     const readyCb = this._onReady;
                     this._onReady = null;
                     readyCb?.(this._content, width, height);
@@ -162,6 +165,30 @@ export class InProcessVideoRenderer {
         }
     }
 
+    // Diagnostic for a black-screen report where the lock UI came up with
+    // no video and no error was ever logged -- if GStreamer's preroll
+    // stalls silently (no bus ERROR message), _pullFrame just keeps
+    // polling forever with nothing to show. This makes that stall visible
+    // in the logs instead of indistinguishable from a working, still-
+    // starting pipeline.
+    _startWatchdog() {
+        this._clearWatchdog();
+        this._watchdogId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 6, () => {
+            this._watchdogId = 0;
+            const [, state] = this._pipeline?.get_state(0) ?? [null, Gst.State.NULL];
+            warn(`No video frame after 6s of preroll -- pipeline state is still ${state}. ` +
+                'The GStreamer pipeline may be stuck; the lock screen will stay blank until it recovers.');
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    _clearWatchdog() {
+        if (this._watchdogId) {
+            GLib.source_remove(this._watchdogId);
+            this._watchdogId = 0;
+        }
+    }
+
     get content() {
         return this._content;
     }
@@ -176,6 +203,7 @@ export class InProcessVideoRenderer {
         // immediately so onReady (and a first visible frame) fires without
         // waiting for an explicit play().
         this._startPolling();
+        this._startWatchdog();
     }
 
     play() {
@@ -189,6 +217,7 @@ export class InProcessVideoRenderer {
 
     destroy() {
         this._stopPolling();
+        this._clearWatchdog();
 
         if (this._bus) {
             this._bus.remove_signal_watch();

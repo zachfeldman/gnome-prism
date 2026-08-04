@@ -352,6 +352,8 @@ export default class GnomePrismScreensaverExtension extends Extension {
 
         // Apply the clean state immediately for the initial locked view.
         this._applyCleanMode(dialog);
+
+        warn('Video actors created and fade-in started');
     }
 
     // No window/connector/PID matching needed at all -- unlike the old
