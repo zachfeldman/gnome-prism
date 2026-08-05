@@ -7,6 +7,11 @@ import St from 'gi://St';
 import { initGst } from '../utils/safe_gst.js';
 import { warn, error } from '../utils/logging.js';
 
+// ~120Hz -- comfortably above any real video or display framerate, so the
+// poll loop never becomes the bottleneck on frame delivery (see
+// _startPolling for why this isn't tied to the configured framerate).
+const POLL_INTERVAL_MS = 8;
+
 // Renders decoded video frames directly into an St.ImageContent inside
 // GNOME Shell's own process, instead of spawning a separate window in a
 // separate process and reparenting its compositor actor into the lock
@@ -147,12 +152,20 @@ export class InProcessVideoRenderer {
         }
     }
 
+    // Deliberately not derived from this._framerate: that setting only
+    // actually re-times the pipeline when useVideorate is on (it's off by
+    // default), so polling at the configured output framerate instead of
+    // the source video's native framerate caused a beat pattern against
+    // appsink's sync=true delivery -- some polls missed a frame that had
+    // already been dropped (max-buffers=1), others re-grabbed a stale one,
+    // producing visible jitter. appsink only makes a sample available once
+    // its timestamp has passed, so polling faster than any real video
+    // framerate is safe -- an early poll just returns null immediately.
     _startPolling() {
         if (this._pollId)
             return;
 
-        const intervalMs = Math.max(Math.round(1000 / (this._framerate || 30)), 8);
-        this._pollId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, intervalMs, () => {
+        this._pollId = GLib.timeout_add(GLib.PRIORITY_DEFAULT, POLL_INTERVAL_MS, () => {
             this._pullFrame();
             return GLib.SOURCE_CONTINUE;
         });
