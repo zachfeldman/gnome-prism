@@ -479,22 +479,28 @@ for _yubi_cand in "${APPS_DEST}/com.yubico.authenticator.desktop" "${YUBICO_DESK
 done
 if [[ -n "${YUBICO_DESKTOP}" ]]; then
   mkdir -p "${APPS_DEST}"
-  python3 - <<'PY' "${YUBICO_DESKTOP}"
+  # Write the patched copy into APPS_DEST like every other override above,
+  # rather than editing the source in place: the source can be root-owned (a
+  # distro package under /usr/share), and a user-level entry is what shadows
+  # it anyway. When the source already lives in APPS_DEST, dest is that file.
+  YUBICO_DESKTOP_DEST="${APPS_DEST}/$(basename "${YUBICO_DESKTOP}")"
+  python3 - <<'PY' "${YUBICO_DESKTOP}" "${YUBICO_DESKTOP_DEST}"
 import pathlib
 import re
 import sys
 
-path = pathlib.Path(sys.argv[1])
-text = path.read_text(encoding="utf-8")
+src = pathlib.Path(sys.argv[1])
+dest = pathlib.Path(sys.argv[2])
+text = src.read_text(encoding="utf-8")
 
 if re.search(r"^Icon=.*$", text, flags=re.M):
     text = re.sub(r"^Icon=.*$", "Icon=com.yubico.yubioath", text, flags=re.M)
 else:
     text += "\nIcon=com.yubico.yubioath\n"
 
-path.write_text(text, encoding="utf-8")
+dest.write_text(text, encoding="utf-8")
 PY
-  echo "Set themed icon on Yubico launcher ${YUBICO_DESKTOP}"
+  echo "Installed Yubico desktop override to ${YUBICO_DESKTOP_DEST}"
 fi
 
 # Override Toshy tray icons with themed versions when Toshy is installed.
