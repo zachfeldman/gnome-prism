@@ -50,6 +50,8 @@ YUBICO_DESKTOP_DEST="${PREFIX}/.local/share/applications/com.yubico.yubioath.des
 VIVALDI_MODS_DEST="${PREFIX}/.local/share/gnome-prism/vivaldi"
 DM_MONO_DIR="${PREFIX}/.local/share/fonts/DMMono"
 GTK4_OVERRIDE_DEST="${PREFIX}/.config/gtk-4.0/gtk.css"
+GHOSTTY_THEME_DEST="${PREFIX}/.config/ghostty/themes/${THEME_NAME}"
+GHOSTTY_CONFIG_DEST="${PREFIX}/.config/ghostty/config"
 
 rm -rf "${THEME_DEST_LEGACY}" "${THEME_DEST_XDG}"
 rm -rf "${ICONS_DEST_LEGACY}" "${ICONS_DEST_XDG}"
@@ -61,6 +63,23 @@ rm -f "${FIRMWARE_UPDATER_DESKTOP_DEST}" "${FIRMWARE_UPDATER_APP_DESKTOP_DEST}"
 rm -f "${YUBICO_DESKTOP_DEST}"
 rm -rf "${DM_MONO_DIR}"
 rm -f "${GTK4_OVERRIDE_DEST}"
+rm -f "${GHOSTTY_THEME_DEST}"
+
+# Drop our "theme =" line from the Ghostty config too - leaving it behind points
+# Ghostty at a theme that no longer exists.
+if [[ -f "${GHOSTTY_CONFIG_DEST}" ]] && command -v python3 >/dev/null 2>&1; then
+  python3 - <<'PY' "${GHOSTTY_CONFIG_DEST}" "${THEME_NAME}"
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+name = re.escape(sys.argv[2])
+text = path.read_text(encoding="utf-8")
+text = re.sub(rf"(?:\n# Installed by gnome-prism\.)?\n\s*theme\s*=\s*{name}\s*(?=\n|$)", "", text)
+path.write_text(text, encoding="utf-8")
+PY
+fi
 fc-cache -f "${PREFIX}/.local/share/fonts" 2>/dev/null || true
 
 if [[ "${PREFIX}" == "${HOME}" ]] && command -v gsettings >/dev/null 2>&1; then
@@ -97,3 +116,4 @@ echo "  ${FIRMWARE_UPDATER_APP_DESKTOP_DEST}"
 echo "  ${YUBICO_DESKTOP_DEST}"
 echo "  ${DM_MONO_DIR}"
 echo "  ${GTK4_OVERRIDE_DEST}"
+echo "  ${GHOSTTY_THEME_DEST}"

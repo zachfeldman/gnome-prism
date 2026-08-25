@@ -1,0 +1,35 @@
+# gnome-prism palette for Ghostty.
+#
+# A Ghostty theme file: drop it in ~/.config/ghostty/themes/ and select it with
+# "theme = gnome-prism" in ~/.config/ghostty/config.
+#
+# Colors are the same tokens as apps/tilix/gnome-prism.json, so a Tilix profile
+# using the gnome-prism scheme (or use-theme-colors=true against the gnome-prism
+# GTK theme, which resolves to the same fg/bg) looks identical in Ghostty.
+
+background = #000000
+foreground = #BDA7F0
+
+# theme_selected_bg_color / theme_selected_fg_color from the GTK theme.
+selection-background = #BDA7F0
+selection-foreground = #000000
+
+cursor-color = #BDA7F0
+cursor-text = #000000
+
+palette = 0=#000000
+palette = 1=#FF7447
+palette = 2=#7EC9A0
+palette = 3=#FFCC66
+palette = 4=#A8C4FF
+palette = 5=#BDA7F0
+palette = 6=#89DDFF
+palette = 7=#E3D9FF
+palette = 8=#555555
+palette = 9=#FF8F6B
+palette = 10=#A0DBB8
+palette = 11=#FFD999
+palette = 12=#C0D4FF
+palette = 13=#CAB8F5
+palette = 14=#B0E8FF
+palette = 15=#F5F0FF

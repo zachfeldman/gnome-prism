@@ -160,6 +160,7 @@ FIRMWARE_UPDATER_APP_SNAP_DESKTOP_SRC="${FIRMWARE_UPDATER_APP_SNAP_DESKTOP_SRC:-
 YUBICO_DESKTOP_SRC="${YUBICO_DESKTOP_SRC:-${HOME}/.local/share/applications/com.yubico.yubioath.desktop}"
 CURSOR_SETTINGS_TEMPLATE="${REPO_ROOT}/apps/cursor/gnome-prism-settings.json"
 TILIX_THEME_SCRIPT="${REPO_ROOT}/apps/tilix/install.sh"
+GHOSTTY_THEME_SRC="${REPO_ROOT}/apps/ghostty/${THEME_NAME}"
 
 THEME_DEST_LEGACY="${PREFIX}/.themes/${THEME_NAME}"
 THEME_DEST_XDG="${PREFIX}/.local/share/themes/${THEME_NAME}"
@@ -167,6 +168,8 @@ ICONS_DEST_LEGACY="${PREFIX}/.icons/${THEME_NAME}"
 ICONS_DEST_XDG="${PREFIX}/.local/share/icons/${THEME_NAME}"
 BACKGROUNDS_DEST="${PREFIX}/.local/share/backgrounds/${THEME_NAME}"
 APPS_DEST="${PREFIX}/.local/share/applications"
+GHOSTTY_THEME_DEST="${PREFIX}/.config/ghostty/themes/${THEME_NAME}"
+GHOSTTY_CONFIG_DEST="${PREFIX}/.config/ghostty/config"
 FIREFOX_DESKTOP_DEST="${APPS_DEST}/firefox_firefox.desktop"
 THUNDERBIRD_DESKTOP_DEST="${APPS_DEST}/thunderbird_thunderbird.desktop"
 SNAP_STORE_DESKTOP_DEST="${APPS_DEST}/snap-store_snap-store.desktop"
@@ -591,6 +594,41 @@ if dest_data.get("window.titleBarStyle") == "native" and "window.titleBarStyle" 
 dest.write_text(json.dumps(dest_data, indent=2) + "\n", encoding="utf-8")
 PY
     echo "Applied Cursor settings to ${CURSOR_SETTINGS_DEST}"
+  fi
+fi
+
+# Ghostty color theme. Unlike the Tilix scheme, which needs sudo to reach
+# /usr/share/tilix/schemes, a Ghostty theme is a plain user-level file, so this
+# runs under any prefix. Selecting it takes a "theme =" line in the Ghostty
+# config; patch one that already exists, but do not create a config from scratch.
+if [[ -f "${GHOSTTY_THEME_SRC}" ]]; then
+  echo
+  echo "=== GHOSTTY COLOR THEME ==="
+  mkdir -p "$(dirname "${GHOSTTY_THEME_DEST}")"
+  cp "${GHOSTTY_THEME_SRC}" "${GHOSTTY_THEME_DEST}"
+  echo "Installed Ghostty theme to ${GHOSTTY_THEME_DEST}"
+  if [[ -f "${GHOSTTY_CONFIG_DEST}" ]]; then
+    python3 - <<'PY' "${GHOSTTY_CONFIG_DEST}" "${THEME_NAME}"
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+name = sys.argv[2]
+text = path.read_text(encoding="utf-8")
+
+if re.search(r"^\s*theme\s*=.*$", text, flags=re.M):
+    text = re.sub(r"^\s*theme\s*=.*$", f"theme = {name}", text, flags=re.M)
+else:
+    if text and not text.endswith("\n"):
+        text += "\n"
+    text += f"\n# Installed by gnome-prism.\ntheme = {name}\n"
+
+path.write_text(text, encoding="utf-8")
+PY
+    echo "Selected theme = ${THEME_NAME} in ${GHOSTTY_CONFIG_DEST}"
+  else
+    echo "No Ghostty config at ${GHOSTTY_CONFIG_DEST}; add \"theme = ${THEME_NAME}\" to one to select it."
   fi
 fi
 

@@ -119,6 +119,19 @@ Two levels of Firefox theming are available:
 ./scripts/apply_firefox_userchrome.sh
 ```
 
+### Ghostty
+
+The install script writes `apps/ghostty/gnome-prism` to
+`~/.config/ghostty/themes/gnome-prism` and sets `theme = gnome-prism` in an
+existing `~/.config/ghostty/config`. If you have no config yet, create one with:
+
+```
+theme = gnome-prism
+```
+
+Ghostty reads its config at startup; press `ctrl+shift+,` to reload it in place.
+The colors are the same tokens as the Tilix scheme, so both terminals match.
+
 ### Vivaldi
 
 ```bash

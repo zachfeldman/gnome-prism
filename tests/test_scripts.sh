@@ -49,6 +49,11 @@ Exec=yubioath
 Icon=/tmp/absolute/path/com.yubico.yubioath.png
 EOF
 
+mkdir -p "${tmpdir}/.config/ghostty"
+cat > "${tmpdir}/.config/ghostty/config" <<'EOF'
+font-size = 12
+EOF
+
 mkdir -p "${tmpdir}/.config/Cursor/User"
 cat > "${tmpdir}/.config/Cursor/User/settings.json" <<'EOF'
 {
@@ -99,6 +104,36 @@ test -f "${tmpdir}/.local/share/applications/firefox_firefox.desktop"
 test -f "${tmpdir}/.local/share/applications/spotify_spotify.desktop"
 test -f "${tmpdir}/.local/share/applications/com.yubico.yubioath.desktop"
 test -f "${tmpdir}/.config/Cursor/User/settings.json"
+test -f "${tmpdir}/.config/ghostty/themes/gnome-prism"
+python3 - <<'PY' "${tmpdir}/.config/ghostty/themes/gnome-prism" "${REPO_ROOT}/apps/tilix/gnome-prism.json"
+import json
+import pathlib
+import re
+import sys
+
+theme = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+scheme = json.loads(pathlib.Path(sys.argv[2]).read_text(encoding="utf-8"))
+
+# The Ghostty theme and the Tilix scheme must not drift apart.
+palette = dict(re.findall(r"^palette = (\d+)=(#[0-9A-Fa-f]{6})$", theme, flags=re.M))
+if [palette.get(str(i)) for i in range(16)] != scheme["palette"]:
+    raise SystemExit("Ghostty palette does not match the Tilix scheme palette")
+for key, scheme_key in (("background", "background-color"), ("foreground", "foreground-color")):
+    found = re.search(rf"^{key} = (#[0-9A-Fa-f]{{6}})$", theme, flags=re.M)
+    if not found or found.group(1) != scheme[scheme_key]:
+        raise SystemExit(f"Ghostty {key} does not match the Tilix scheme {scheme_key}")
+PY
+python3 - <<'PY' "${tmpdir}/.config/ghostty/config"
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+if not re.search(r"^theme = gnome-prism$", text, flags=re.M):
+    raise SystemExit("Expected theme = gnome-prism in the Ghostty config")
+if "font-size = 12" not in text:
+    raise SystemExit("Ghostty config patch clobbered pre-existing settings")
+PY
 python3 - <<'PY' "${tmpdir}/.local/share/applications/firefox_firefox.desktop"
 import pathlib
 import sys
@@ -146,6 +181,18 @@ test ! -e "${tmpdir}/.local/share/gnome-prism/vivaldi"
 test ! -e "${tmpdir}/.local/share/applications/firefox_firefox.desktop"
 test ! -e "${tmpdir}/.local/share/applications/spotify_spotify.desktop"
 test ! -e "${tmpdir}/.local/share/applications/com.yubico.yubioath.desktop"
+test ! -e "${tmpdir}/.config/ghostty/themes/gnome-prism"
+python3 - <<'PY' "${tmpdir}/.config/ghostty/config"
+import pathlib
+import re
+import sys
+
+text = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+if re.search(r"^\s*theme\s*=\s*gnome-prism\s*$", text, flags=re.M):
+    raise SystemExit("Uninstall left theme = gnome-prism in the Ghostty config")
+if "font-size = 12" not in text:
+    raise SystemExit("Uninstall clobbered pre-existing Ghostty settings")
+PY
 
 echo "Validating Firefox theme assets..."
 test -f "${REPO_ROOT}/apps/firefox/gnome-prism-theme/manifest.json"
