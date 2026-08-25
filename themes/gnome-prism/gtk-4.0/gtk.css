@@ -321,3 +321,35 @@ notebook > header label,
 columnview > header label {
   font-family: "Noto Sans Mono", "DM Mono", monospace;
 }
+
+/* Fingerprint dialog (Settings > System > Users > Fingerprint Login).
+ *
+ * GNOME 50 styles the print tiles with
+ *   .fingerprint-icon > button { border-radius: 64px;
+ *                               background-color: var(--view-bg-color); ... }
+ * but this file is loaded at GTK's USER provider priority, which outranks an
+ * application's own stylesheet regardless of selector specificity. So the
+ * blanket "button" rules above won the tile: border-radius: 0 squared off the
+ * circle, and the :checked rule filled it flat with @fp_stroke, leaving the
+ * list-add glyph invisible - an accent-colored block where the + should be.
+ *
+ * The add-print tile is a GtkMenuButton (node "menubutton" wrapping "button"),
+ * and an enrolled print is a plain image, so pin all three. */
+.fingerprint-icon > menubutton,
+.fingerprint-icon > menubutton > button,
+.fingerprint-icon > image {
+  padding: 15px;
+  min-width: 32px;
+  min-height: 32px;
+  border-radius: 64px;
+  background-color: @fp_bg;
+  color: @fp_stroke;
+  border: 1px solid @fp_stroke;
+}
+
+.fingerprint-icon > menubutton > button:hover,
+.fingerprint-icon > menubutton > button:active,
+.fingerprint-icon > menubutton > button:checked {
+  background-color: @fp_surface;
+  color: @fp_stroke;
+}
