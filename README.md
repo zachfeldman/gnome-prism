@@ -137,6 +137,7 @@ The icon theme ships overrides for 100+ applications as SVG (scalable) and PNG (
 
 - GNOME core apps (Files, Settings, Terminal, Calculator, Calendar, Text Editor, etc.)
 - Browsers: Firefox, Chrome, Chromium, Vivaldi
+- Terminals: GNOME Terminal, Tilix, Ptyxis, Ghostty
 - Dev tools: Cursor, VS Code, Sublime Text, btop, htop
 - Media: Spotify, VLC, Rhythmbox, Tenacity
 - Productivity: LibreOffice (Writer, Calc, Impress, Draw), Evince, Shotwell

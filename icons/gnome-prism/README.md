@@ -13,6 +13,7 @@ This icon theme inherits from `Adwaita` and ships custom overrides.
 - `org.gnome.Terminal.svg`
 - `tilix.svg`
 - `com.gexperts.Tilix.svg`
+- `com.mitchellh.ghostty.svg` (+ `ghostty.svg` alias)
 - `org.gnome.Nautilus.svg`
 - `firefox.svg`
 - `org.mozilla.firefox.svg`
