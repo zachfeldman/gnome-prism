@@ -191,6 +191,10 @@ Contributions are welcome! If you have a bug report, feature request, or questio
 - libadwaita apps may ignore parts of custom GTK theming by design
 - Best visual consistency comes from coordinating shell + GTK + icons + wallpaper
 
+## Ports
+
+- [prism-port](https://github.com/leverarchfile/prism-port): the prism palette and conventions for a tiling window manager environment (mango, foot, Neovim, fuzzel, mako, and others)
+
 ## Credits
 
 - **Gaurav Singh** — theme design
