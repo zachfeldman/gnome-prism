@@ -24,12 +24,14 @@ const POLL_INTERVAL_MS = 8;
 // there is no separate window, no separate process, and no Wayland
 // surface to go stale.
 export class InProcessVideoRenderer {
-    constructor({ videoPath, loop, volume, framerate, useVideorate }) {
+    constructor({ videoPath, loop, volume, framerate, useVideorate, maxWidth, maxHeight }) {
         this._videoPath = videoPath;
         this._loop = loop;
         this._volume = volume;
         this._framerate = framerate;
         this._useVideorate = useVideorate;
+        this._maxWidth = maxWidth;
+        this._maxHeight = maxHeight;
 
         this._pipeline = null;
         this._appsink = null;
@@ -64,8 +66,16 @@ export class InProcessVideoRenderer {
         // clients' GPU contexts) during testing. Polling try_pull_sample()
         // from our own GLib.timeout_add callback instead guarantees every
         // Cogl/GJS call here happens on the main thread.
+        // Bounding (not fixing) width/height lets videoscale pass the
+        // source through untouched when it already fits, and downscale
+        // (preserving aspect ratio) only when it exceeds the largest
+        // monitor -- avoids decoding/converting/uploading pixels no
+        // display can even show.
+        const sizeCap = (this._maxWidth && this._maxHeight)
+            ? `,width=[1,${Math.round(this._maxWidth)}],height=[1,${Math.round(this._maxHeight)}]`
+            : '';
         const sinkDesc =
-            `videoconvert ! videoscale ! ${rateStage}video/x-raw,format=RGBA ! ` +
+            `videoconvert ! videoscale ! ${rateStage}video/x-raw,format=RGBA${sizeCap} ! ` +
             `appsink name=sink sync=true max-buffers=1 drop=true`;
 
         const videoSinkBin = Gst.parse_bin_from_description(sinkDesc, true);

@@ -303,8 +303,17 @@ export default class GnomePrismScreensaverExtension extends Extension {
             brightness: this._blurBrightness,
         };
 
+        // Cap decode/convert/upload resolution to the largest connected
+        // monitor's physical pixel size -- without this, a source video
+        // larger than any display still gets decoded, color-converted, and
+        // copied into a texture at full resolution every frame, which is
+        // pure wasted CPU work on the same thread the compositor runs on.
+        const monitors = Main.layoutManager.monitors;
+        const maxWidth = Math.max(...monitors.map(m => m.width)) * themeContext.scale_factor;
+        const maxHeight = Math.max(...monitors.map(m => m.height)) * themeContext.scale_factor;
+
         this._renderer = new InProcessVideoRenderer({
-            videoPath, loop, volume, framerate, useVideorate,
+            videoPath, loop, volume, framerate, useVideorate, maxWidth, maxHeight,
         });
 
         try {
