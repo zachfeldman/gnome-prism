@@ -132,6 +132,9 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._hideUntilInteraction = false;
         this._keepAwake = false;
         this._inhibitCookie = null;
+
+        this._suppressedLightboxes = [];
+        this._heartbeatId = 0;
     }
 
     // ---------------------------------------------------------------------
@@ -363,6 +366,34 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._applyCleanMode(dialog);
 
         warn('Video actors created and fade-in started');
+        this._startHeartbeat();
+    }
+
+    // Diagnostic for a report of the video going black after several hours
+    // of unattended overnight playback, with no error or crash logged
+    // anywhere -- unlike _startWatchdog (which only covers the initial
+    // preroll), nothing previously monitored a lock cycle once video
+    // successfully started, so a later stall was invisible. Logs the state
+    // most likely to explain a silent go-dark: whether frames are still
+    // arriving, whether the curtain-suppression override is still holding
+    // opacity at 0, and whether the keep-awake inhibitor is still held.
+    _startHeartbeat() {
+        this._heartbeatId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 300, () => {
+            const frameAge = this._renderer?.secondsSinceLastFrame();
+            const lightboxState = this._suppressedLightboxes
+                .map(({ name, lightbox }) => `${name}=opacity:${lightbox.opacity}`)
+                .join(' ');
+            warn(`Heartbeat: last frame ${frameAge?.toFixed(1) ?? 'never'}s ago, ` +
+                `inhibitor=${this._inhibitCookie !== null ? 'held' : 'not held'}, ${lightboxState}`);
+            return GLib.SOURCE_CONTINUE;
+        });
+    }
+
+    _stopHeartbeat() {
+        if (this._heartbeatId) {
+            GLib.source_remove(this._heartbeatId);
+            this._heartbeatId = 0;
+        }
     }
 
     // No window/connector/PID matching needed at all -- unlike the old
@@ -508,6 +539,8 @@ export default class GnomePrismScreensaverExtension extends Extension {
                 const lightbox = shield?.[name];
                 if (!lightbox)
                     continue;
+
+                this._suppressedLightboxes.push({ name, lightbox });
 
                 this._injectionManager.overrideMethod(
                     lightbox, 'lightOn',
@@ -713,6 +746,8 @@ export default class GnomePrismScreensaverExtension extends Extension {
 
     _disableLockMode() {
         // User unlocked the screen. Stop the video and clean everything up.
+        this._stopHeartbeat();
+
         if (this._dialogWaitId) {
             GLib.source_remove(this._dialogWaitId);
             this._dialogWaitId = 0;

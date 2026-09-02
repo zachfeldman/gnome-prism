@@ -43,6 +43,17 @@ export class InProcessVideoRenderer {
         this._coglContext = null;
         this._pollId = 0;
         this._watchdogId = 0;
+        this._lastFrameTime = 0;
+    }
+
+    // For the periodic lock-mode heartbeat (see extension.js) -- lets it
+    // report whether frames are still actually arriving during long,
+    // unattended playback, since a stall here wouldn't otherwise log
+    // anything (see _startWatchdog, which only covers the initial preroll).
+    secondsSinceLastFrame() {
+        if (!this._lastFrameTime)
+            return null;
+        return (GLib.get_monotonic_time() - this._lastFrameTime) / 1e6;
     }
 
     // onReady(content, width, height) is called once, the first time a
@@ -154,6 +165,7 @@ export class InProcessVideoRenderer {
                     this._coglContext, bytes, Cogl.PixelFormat.RGBA_8888,
                     width, height, rowstride
                 );
+                this._lastFrameTime = GLib.get_monotonic_time();
             } finally {
                 buffer.unmap(mapInfo);
             }
