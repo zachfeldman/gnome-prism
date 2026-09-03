@@ -1,12 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
-
 PREFIX="${HOME}"
 EXT_UUID="gnome-prism-screensaver@zachfeldman"
-EXT_SRC="${REPO_ROOT}/extensions/gnome-prism-screensaver"
+EXT_REPO="https://github.com/zachfeldman/LiveLockScreen.git"
 
 usage() {
   cat <<EOF
@@ -14,7 +11,9 @@ Usage: $0 [--prefix <path>] [--help]
 
 Installs the optional GNOME Prism screensaver GNOME Shell extension
 (${EXT_UUID}), a maintained fork of Live Lock Screen that plays a
-user-selected video on GNOME's real lock screen.
+user-selected video on GNOME's real lock screen. Lives in its own
+repository (${EXT_REPO}) since it's AGPL-3.0, separate from GNOME Prism's
+own MIT license.
 
 Installs into:
   <prefix>/.local/share/gnome-shell/extensions/${EXT_UUID}
@@ -24,7 +23,8 @@ This script:
     the GStreamer good/bad/ugly plugin packages the extension needs for
     broad video codec support, warning (not failing) if a package is
     unavailable for your distro/version;
-  - copies the extension and compiles its GSettings schema;
+  - clones (or updates, if already installed) the extension and compiles
+    its GSettings schema;
   - enables the extension via gnome-extensions, or queues it to enable on
     next login if GNOME Shell hasn't loaded it yet (Wayland).
 
@@ -52,14 +52,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-if [[ ! -d "${EXT_SRC}" ]]; then
-  echo "Screensaver extension source not found: ${EXT_SRC}" >&2
-  exit 1
-fi
-
-METADATA_UUID="$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['uuid'])" "${EXT_SRC}/metadata.json")"
-if [[ "${METADATA_UUID}" != "${EXT_UUID}" ]]; then
-  echo "Error: metadata.json uuid (${METADATA_UUID}) does not match expected ${EXT_UUID}" >&2
+if ! command -v git >/dev/null 2>&1; then
+  echo "Error: git is required to install the screensaver extension." >&2
   exit 1
 fi
 
@@ -113,11 +107,22 @@ EXT_DEST="${EXT_DEST_DIR}/${EXT_UUID}"
 echo
 echo "=== SCREENSAVER EXTENSION FILES ==="
 mkdir -p "${EXT_DEST_DIR}"
-rm -rf "${EXT_DEST}"
-cp -a "${EXT_SRC}" "${EXT_DEST}"
+if [[ -d "${EXT_DEST}/.git" ]]; then
+  git -C "${EXT_DEST}" pull --ff-only
+  echo "Updated screensaver extension in ${EXT_DEST}"
+else
+  rm -rf "${EXT_DEST}"
+  git clone "${EXT_REPO}" "${EXT_DEST}"
+  echo "Installed screensaver extension to ${EXT_DEST}"
+fi
 # Never ship a stale compiled schema; always recompile below.
 rm -f "${EXT_DEST}/schemas/gschemas.compiled"
-echo "Installed screensaver extension to ${EXT_DEST}"
+
+METADATA_UUID="$(python3 -c "import json,sys; print(json.load(open(sys.argv[1]))['uuid'])" "${EXT_DEST}/metadata.json")"
+if [[ "${METADATA_UUID}" != "${EXT_UUID}" ]]; then
+  echo "Error: metadata.json uuid (${METADATA_UUID}) does not match expected ${EXT_UUID}" >&2
+  exit 1
+fi
 
 if command -v glib-compile-schemas >/dev/null 2>&1; then
   glib-compile-schemas "${EXT_DEST}/schemas"

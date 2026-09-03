@@ -228,20 +228,12 @@ ss_tmpdir="${tmpdir}/screensaver-prefix"
 mkdir -p "${ss_tmpdir}"
 ss_ext_dest="${ss_tmpdir}/.local/share/gnome-shell/extensions/${SCREENSAVER_UUID}"
 
-# Metadata uuid must match the directory name it gets installed under.
-python3 - <<'PY' "${REPO_ROOT}/extensions/gnome-prism-screensaver/metadata.json" "${SCREENSAVER_UUID}"
-import json
-import pathlib
-import sys
-
-metadata = json.loads(pathlib.Path(sys.argv[1]).read_text(encoding="utf-8"))
-expected_uuid = sys.argv[2]
-if metadata.get("uuid") != expected_uuid:
-    raise SystemExit(f"metadata.json uuid {metadata.get('uuid')!r} != expected {expected_uuid!r}")
-PY
-
+# The extension now lives in its own repo (git-cloned by install_screensaver.sh),
+# so this exercises a real network clone, not just local file layout -- and
+# the script's own post-clone uuid check (metadata.json uuid must match the
+# directory name it's installed under) covers what a local pre-check used to.
 # --prefix != HOME, so the script never tries to call gnome-extensions or
-# install distro packages here -- this only exercises file layout/idempotency.
+# install distro packages here.
 "${SCREENSAVER_SCRIPT}" --prefix "${ss_tmpdir}" >/dev/null
 "${SCREENSAVER_SCRIPT}" --prefix "${ss_tmpdir}" >/dev/null # idempotency: run twice
 

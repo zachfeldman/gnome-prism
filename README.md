@@ -185,10 +185,11 @@ Re-run `./scripts/setup_bottom_panel.sh` after logging in. The Dash to Panel ext
 
 GNOME Prism can optionally play a user-selected looping video on GNOME's
 **real, secure lock screen** — a maintained fork of
-[Live Lock Screen](https://github.com/nick-redwill/LiveLockScreen), packaged
-as `extensions/gnome-prism-screensaver/` (UUID
-`gnome-prism-screensaver@zachfeldman`, AGPL-3.0 licensed — see
-`extensions/gnome-prism-screensaver/NOTICE.md`).
+[Live Lock Screen](https://github.com/nick-redwill/LiveLockScreen), developed
+in its own repository,
+[zachfeldman/LiveLockScreen](https://github.com/zachfeldman/LiveLockScreen)
+(UUID `gnome-prism-screensaver@zachfeldman`, AGPL-3.0 licensed — separate
+from this repository's MIT license; see that repo's `NOTICE.md`).
 
 **This never replaces, weakens, or bypasses GNOME's authentication.** Locking
 is always performed by GNOME itself (`Main.screenShield.lock()`); the
@@ -301,7 +302,7 @@ gnome-extensions disable gnome-prism-screensaver@zachfeldman
 - Inherited from upstream: possible audio/video desync after suspend/wake,
   and possible clicking/crackling audio on pause/play.
 - Video is decoded and rendered directly inside GNOME Shell's own process
-  (see `extensions/gnome-prism-screensaver/NOTICE.md` for why); this avoids
+  (see the screensaver repo's `NOTICE.md` for why); this avoids
   the cross-process/cross-GPU rendering issues the original window-based
   approach could hit, at the cost of a small extra CPU copy per frame to
   upload decoded frames into the Shell's compositor.
@@ -355,9 +356,10 @@ Contributions are welcome! If you have a bug report, feature request, or questio
 - All public-facing names use `gnome-prism`
 - libadwaita apps may ignore parts of custom GTK theming by design
 - Best visual consistency comes from coordinating shell + GTK + icons + wallpaper
-- The repository is MIT licensed, except `extensions/gnome-prism-screensaver/`,
-  which is AGPL-3.0 (a Live Lock Screen derivative — see that directory's
-  `NOTICE.md`)
+- This repository is MIT licensed. The optional screensaver extension lives
+  in its own AGPL-3.0 repository (a Live Lock Screen derivative — see
+  [zachfeldman/LiveLockScreen](https://github.com/zachfeldman/LiveLockScreen)),
+  kept separate specifically to avoid mixing licenses in one repo.
 
 ## Ports
 
