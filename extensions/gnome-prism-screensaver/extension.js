@@ -135,6 +135,7 @@ export default class GnomePrismScreensaverExtension extends Extension {
 
         this._suppressedLightboxes = [];
         this._heartbeatId = 0;
+        this._displayConfigProxy = null;
     }
 
     // ---------------------------------------------------------------------
@@ -361,6 +362,7 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._startAnimation();
         this._renderer.play();
         this._requestKeepAwake();
+        this._guardDisplayPower();
 
         // Apply the clean state immediately for the initial locked view.
         this._applyCleanMode(dialog);
@@ -383,8 +385,11 @@ export default class GnomePrismScreensaverExtension extends Extension {
             const lightboxState = this._suppressedLightboxes
                 .map(({ name, lightbox }) => `${name}=opacity:${lightbox.opacity}`)
                 .join(' ');
+            const powerSaveMode = this._displayConfigProxy
+                ?.get_cached_property('PowerSaveMode')?.unpack() ?? 'unwatched';
             warn(`Heartbeat: last frame ${frameAge?.toFixed(1) ?? 'never'}s ago, ` +
-                `inhibitor=${this._inhibitCookie !== null ? 'held' : 'not held'}, ${lightboxState}`);
+                `inhibitor=${this._inhibitCookie !== null ? 'held' : 'not held'}, ` +
+                `powerSaveMode=${powerSaveMode}, ${lightboxState}`);
             return GLib.SOURCE_CONTINUE;
         });
     }
@@ -653,6 +658,61 @@ export default class GnomePrismScreensaverExtension extends Extension {
         }
     }
 
+    // Diagnostic evidence (a heartbeat showing frames still arriving and
+    // the keep-awake inhibitor still held, yet the physical screen was
+    // reported black until a key was pressed) showed the SessionManager
+    // idle inhibitor above doesn't stop Mutter from independently blanking
+    // the monitor -- that's governed by a separate DPMS property,
+    // PowerSaveMode, on org.gnome.Mutter.DisplayConfig. Actively watching
+    // and reverting it (rather than assuming the idle inhibitor covers it)
+    // is the direct fix.
+    _guardDisplayPower() {
+        if (!this._keepAwake || this._displayConfigProxy)
+            return;
+
+        try {
+            this._displayConfigProxy = Gio.DBusProxy.new_for_bus_sync(
+                Gio.BusType.SESSION,
+                Gio.DBusProxyFlags.NONE,
+                null,
+                'org.gnome.Mutter.DisplayConfig',
+                '/org/gnome/Mutter/DisplayConfig',
+                'org.gnome.Mutter.DisplayConfig',
+                null
+            );
+            this._displayConfigProxy.connectObject('g-properties-changed', (proxy, changed) => {
+                const variant = changed.deep_unpack()['PowerSaveMode'];
+                if (variant && variant.unpack() !== 0) {
+                    warn(`Monitor power-save mode changed to ${variant.unpack()} while screensaver ` +
+                        'active -- forcing the display back on');
+                    this._forceDisplayPowerOn();
+                }
+            }, this);
+        } catch (e) {
+            warn(`Failed to watch monitor power-save mode: ${e}`);
+            this._displayConfigProxy = null;
+        }
+    }
+
+    _forceDisplayPowerOn() {
+        try {
+            this._displayConfigProxy?.call_sync(
+                'org.freedesktop.DBus.Properties.Set',
+                new GLib.Variant('(ssv)', [
+                    'org.gnome.Mutter.DisplayConfig', 'PowerSaveMode', new GLib.Variant('i', 0),
+                ]),
+                Gio.DBusCallFlags.NONE, -1, null
+            );
+        } catch (e) {
+            warn(`Failed to force monitor power-save mode back on: ${e}`);
+        }
+    }
+
+    _unguardDisplayPower() {
+        this._displayConfigProxy?.disconnectObject(this);
+        this._displayConfigProxy = null;
+    }
+
     _onPromptShow() {
         if (this._promptShown) return;
         this._promptShown = true;
@@ -786,5 +846,6 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._videoActors = {};
 
         this._releaseKeepAwake();
+        this._unguardDisplayPower();
     }
 }
