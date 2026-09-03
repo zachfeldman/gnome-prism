@@ -111,6 +111,7 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._quickSettingsIndicator = null;
         this._keybindingAdded = false;
         this._keybindingSettingsIds = null;
+        this._displayConfigProxy = null;
 
         this._lockModeActive = false;
         this._sessionModeChangedId = null;
@@ -135,7 +136,6 @@ export default class GnomePrismScreensaverExtension extends Extension {
 
         this._suppressedLightboxes = [];
         this._heartbeatId = 0;
-        this._displayConfigProxy = null;
     }
 
     // ---------------------------------------------------------------------
@@ -147,11 +147,18 @@ export default class GnomePrismScreensaverExtension extends Extension {
     _enableUserMode() {
         this._updateQuickSettingsIndicator();
         this._updateKeybinding();
+        this._guardDisplayPower();
 
         this._keybindingSettingsIds = [
             this._settings.connect(`changed::${Keys.SHOW_START_ACTION}`, () => this._updateQuickSettingsIndicator()),
             this._settings.connect(`changed::${Keys.KEYBINDING_ENABLED}`, () => this._updateKeybinding()),
             this._settings.connect(`changed::${Keys.KEYBINDING}`, () => this._updateKeybinding()),
+            this._settings.connect(`changed::${Keys.KEEP_AWAKE}`, () => {
+                if (this._settings.get_boolean(Keys.KEEP_AWAKE))
+                    this._guardDisplayPower();
+                else
+                    this._unguardDisplayPower();
+            }),
         ];
     }
 
@@ -160,6 +167,7 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._quickSettingsIndicator = null;
 
         this._removeKeybinding();
+        this._unguardDisplayPower();
 
         if (this._keybindingSettingsIds) {
             this._keybindingSettingsIds.forEach(id => this._settings?.disconnect(id));
@@ -283,12 +291,6 @@ export default class GnomePrismScreensaverExtension extends Extension {
 
         this._hideUntilInteraction = this._settings.get_boolean(Keys.HIDE_UNTIL_INTERACTION);
         this._keepAwake = this._settings.get_boolean(Keys.KEEP_AWAKE);
-
-        // As early as possible in the lock cycle -- video decode + waiting
-        // for the dialog to appear can itself take many seconds, and any
-        // display blanking during that window would otherwise go
-        // completely unguarded until _waitForDialog() finishes.
-        this._guardDisplayPower();
 
         const volume = this._settings.get_int(Keys.AUDIO_VOLUME) / 100;
         const loop = this._settings.get_boolean(Keys.LOOPED);
@@ -671,8 +673,14 @@ export default class GnomePrismScreensaverExtension extends Extension {
     // PowerSaveMode, on org.gnome.Mutter.DisplayConfig. Actively watching
     // and reverting it (rather than assuming the idle inhibitor covers it)
     // is the direct fix.
+    //
+    // Runs for the whole enable()/disable() lifetime, not just while
+    // locked: reacting only once locked was too late to catch the initial
+    // blank, since that can happen at essentially the same moment as the
+    // idle timeout that triggers the lock itself, before lock-mode setup
+    // (and this guard) had even started.
     _guardDisplayPower() {
-        if (!this._keepAwake || this._displayConfigProxy)
+        if (!this._settings.get_boolean(Keys.KEEP_AWAKE) || this._displayConfigProxy)
             return;
 
         try {
@@ -688,8 +696,7 @@ export default class GnomePrismScreensaverExtension extends Extension {
             this._displayConfigProxy.connectObject('g-properties-changed', (proxy, changed) => {
                 const variant = changed.deep_unpack()['PowerSaveMode'];
                 if (variant && variant.unpack() !== 0) {
-                    warn(`Monitor power-save mode changed to ${variant.unpack()} while screensaver ` +
-                        'active -- forcing the display back on');
+                    warn(`Monitor power-save mode changed to ${variant.unpack()} -- forcing the display back on`);
                     this._forceDisplayPowerOn();
                 }
             }, this);
@@ -859,6 +866,5 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._videoActors = {};
 
         this._releaseKeepAwake();
-        this._unguardDisplayPower();
     }
 }
