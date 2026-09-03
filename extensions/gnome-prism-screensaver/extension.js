@@ -112,6 +112,7 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._keybindingAdded = false;
         this._keybindingSettingsIds = null;
         this._displayConfigProxy = null;
+        this._displayConfigProxyPending = false;
 
         this._lockModeActive = false;
         this._sessionModeChangedId = null;
@@ -679,31 +680,53 @@ export default class GnomePrismScreensaverExtension extends Extension {
     // blank, since that can happen at essentially the same moment as the
     // idle timeout that triggers the lock itself, before lock-mode setup
     // (and this guard) had even started.
+    //
+    // enable() runs during login, so proxy creation must be async too --
+    // new_for_bus_sync() here previously blocked login itself if Mutter's
+    // DisplayConfig service wasn't already up at that exact moment (the
+    // same class of bug as the earlier call_sync() freeze, just moved to
+    // a worse spot).
     _guardDisplayPower() {
-        if (!this._settings.get_boolean(Keys.KEEP_AWAKE) || this._displayConfigProxy)
+        if (!this._settings.get_boolean(Keys.KEEP_AWAKE) ||
+            this._displayConfigProxy || this._displayConfigProxyPending)
             return;
 
-        try {
-            this._displayConfigProxy = Gio.DBusProxy.new_for_bus_sync(
-                Gio.BusType.SESSION,
-                Gio.DBusProxyFlags.NONE,
-                null,
-                'org.gnome.Mutter.DisplayConfig',
-                '/org/gnome/Mutter/DisplayConfig',
-                'org.gnome.Mutter.DisplayConfig',
-                null
-            );
-            this._displayConfigProxy.connectObject('g-properties-changed', (proxy, changed) => {
-                const variant = changed.deep_unpack()['PowerSaveMode'];
-                if (variant && variant.unpack() !== 0) {
-                    warn(`Monitor power-save mode changed to ${variant.unpack()} -- forcing the display back on`);
-                    this._forceDisplayPowerOn();
+        this._displayConfigProxyPending = true;
+        Gio.DBusProxy.new_for_bus(
+            Gio.BusType.SESSION,
+            Gio.DBusProxyFlags.NONE,
+            null,
+            'org.gnome.Mutter.DisplayConfig',
+            '/org/gnome/Mutter/DisplayConfig',
+            'org.gnome.Mutter.DisplayConfig',
+            null,
+            (source, result) => {
+                this._displayConfigProxyPending = false;
+
+                let proxy;
+                try {
+                    proxy = Gio.DBusProxy.new_for_bus_finish(result);
+                } catch (e) {
+                    warn(`Failed to watch monitor power-save mode: ${e}`);
+                    return;
                 }
-            }, this);
-        } catch (e) {
-            warn(`Failed to watch monitor power-save mode: ${e}`);
-            this._displayConfigProxy = null;
-        }
+
+                // The guard may have been turned off (extension disabled,
+                // or keep-screen-awake toggled off) while this was still
+                // connecting -- don't install it after the fact.
+                if (!this._settings?.get_boolean(Keys.KEEP_AWAKE))
+                    return;
+
+                this._displayConfigProxy = proxy;
+                this._displayConfigProxy.connectObject('g-properties-changed', (p, changed) => {
+                    const variant = changed.deep_unpack()['PowerSaveMode'];
+                    if (variant && variant.unpack() !== 0) {
+                        warn(`Monitor power-save mode changed to ${variant.unpack()} -- forcing the display back on`);
+                        this._forceDisplayPowerOn();
+                    }
+                }, this);
+            }
+        );
     }
 
     // call_sync() here blocked GNOME Shell's entire main loop -- not just
