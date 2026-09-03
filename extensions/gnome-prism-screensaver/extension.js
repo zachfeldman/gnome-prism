@@ -284,6 +284,12 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._hideUntilInteraction = this._settings.get_boolean(Keys.HIDE_UNTIL_INTERACTION);
         this._keepAwake = this._settings.get_boolean(Keys.KEEP_AWAKE);
 
+        // As early as possible in the lock cycle -- video decode + waiting
+        // for the dialog to appear can itself take many seconds, and any
+        // display blanking during that window would otherwise go
+        // completely unguarded until _waitForDialog() finishes.
+        this._guardDisplayPower();
+
         const volume = this._settings.get_int(Keys.AUDIO_VOLUME) / 100;
         const loop = this._settings.get_boolean(Keys.LOOPED);
         const useVideorate = this._settings.get_boolean(Keys.USE_VIDEORATE);
@@ -362,7 +368,6 @@ export default class GnomePrismScreensaverExtension extends Extension {
         this._startAnimation();
         this._renderer.play();
         this._requestKeepAwake();
-        this._guardDisplayPower();
 
         // Apply the clean state immediately for the initial locked view.
         this._applyCleanMode(dialog);
@@ -694,18 +699,26 @@ export default class GnomePrismScreensaverExtension extends Extension {
         }
     }
 
+    // call_sync() here blocked GNOME Shell's entire main loop -- not just
+    // the screensaver -- for ~25s while Mutter was mid-transition before
+    // timing out and failing anyway (observed live: this was a large
+    // fraction of a reported ~1-minute black screen). Must be async so a
+    // slow or stuck reply from Mutter never freezes the compositor.
     _forceDisplayPowerOn() {
-        try {
-            this._displayConfigProxy?.call_sync(
-                'org.freedesktop.DBus.Properties.Set',
-                new GLib.Variant('(ssv)', [
-                    'org.gnome.Mutter.DisplayConfig', 'PowerSaveMode', new GLib.Variant('i', 0),
-                ]),
-                Gio.DBusCallFlags.NONE, -1, null
-            );
-        } catch (e) {
-            warn(`Failed to force monitor power-save mode back on: ${e}`);
-        }
+        this._displayConfigProxy?.call(
+            'org.freedesktop.DBus.Properties.Set',
+            new GLib.Variant('(ssv)', [
+                'org.gnome.Mutter.DisplayConfig', 'PowerSaveMode', new GLib.Variant('i', 0),
+            ]),
+            Gio.DBusCallFlags.NONE, -1, null,
+            (proxy, result) => {
+                try {
+                    proxy.call_finish(result);
+                } catch (e) {
+                    warn(`Failed to force monitor power-save mode back on: ${e}`);
+                }
+            }
+        );
     }
 
     _unguardDisplayPower() {
