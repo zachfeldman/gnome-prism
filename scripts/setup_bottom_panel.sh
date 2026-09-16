@@ -18,6 +18,15 @@ DTP_UUID="dash-to-panel@jderose9.github.com"
 DTP_INSTALLED_PATH=""
 DTP_MONITOR_ID="0"
 
+# Pinned to a version whose internal CSS/JS structure has been verified against
+# the GNOME_PRISM_* overrides below. GNOME Shell's background extension updater
+# will otherwise silently replace an already-installed Dash to Panel with
+# whatever is latest on extensions.gnome.org, which can rename the classes/
+# selectors these overrides target and break the taskbar styling with no error
+# logged. Bump this only after re-verifying the overrides against the new
+# version's appIcons.js/taskbar.js/panel.js/stylesheet.css.
+DTP_PINNED_VERSION="v73"
+
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --skip-install)
@@ -57,6 +66,72 @@ if [[ "${SKIP_INSTALL}" -eq 0 ]]; then
     fi
   fi
 fi
+
+install_dtp_pinned_from_github() {
+  echo "Installing Dash to Panel ${DTP_PINNED_VERSION} from GitHub releases..."
+
+  if ! command -v python3 >/dev/null 2>&1; then
+    echo "python3 is required for the pinned installer." >&2
+    return 1
+  fi
+  if ! command -v curl >/dev/null 2>&1 && ! command -v wget >/dev/null 2>&1; then
+    echo "curl or wget is required for the pinned installer." >&2
+    return 1
+  fi
+
+  local zip_name="${DTP_UUID}_${DTP_PINNED_VERSION}.zip"
+  local url="https://github.com/home-sweet-gnome/dash-to-panel/releases/download/${DTP_PINNED_VERSION}/${zip_name}"
+  local tmp_zip
+  tmp_zip="$(mktemp --suffix=.zip)"
+
+  if command -v curl >/dev/null 2>&1; then
+    if ! curl -fL "${url}" -o "${tmp_zip}"; then
+      rm -f "${tmp_zip}"
+      return 1
+    fi
+  else
+    if ! wget -qO "${tmp_zip}" "${url}"; then
+      rm -f "${tmp_zip}"
+      return 1
+    fi
+  fi
+
+  echo "Installing pinned Dash to Panel zip..."
+  python3 - <<'PY' "${tmp_zip}" "${HOME}"
+import json
+import os
+import sys
+import zipfile
+
+zip_path = sys.argv[1]
+home = sys.argv[2]
+
+with zipfile.ZipFile(zip_path) as zf:
+    metadata = json.loads(zf.read("metadata.json").decode("utf-8"))
+    uuid = metadata["uuid"]
+    dest = os.path.join(home, ".local", "share", "gnome-shell", "extensions", uuid)
+    if os.path.isdir(dest):
+        import shutil
+        shutil.rmtree(dest)
+    os.makedirs(dest, exist_ok=True)
+    zf.extractall(dest)
+PY
+  DTP_UUID="$(python3 - <<'PY' "${tmp_zip}"
+import json
+import sys
+import zipfile
+with zipfile.ZipFile(sys.argv[1]) as zf:
+    metadata = json.loads(zf.read("metadata.json").decode("utf-8"))
+print(metadata.get("uuid", "dash-to-panel@jderose9.github.com"))
+PY
+)"
+  rm -f "${tmp_zip}"
+  DTP_INSTALLED_PATH="${HOME}/.local/share/gnome-shell/extensions/${DTP_UUID}"
+
+  if [[ -d "${DTP_INSTALLED_PATH}/schemas" ]] && command -v glib-compile-schemas >/dev/null 2>&1; then
+    glib-compile-schemas "${DTP_INSTALLED_PATH}/schemas" || true
+  fi
+}
 
 install_dtp_from_extensions_gnome_org() {
   echo "Trying extensions.gnome.org fallback..."
@@ -151,8 +226,10 @@ PY
 }
 
 if [[ "${SKIP_INSTALL}" -eq 0 ]]; then
-  echo "Installing Dash to Panel from extensions.gnome.org..."
-  install_dtp_from_extensions_gnome_org
+  if ! install_dtp_pinned_from_github; then
+    echo "Pinned GitHub install failed; falling back to extensions.gnome.org (latest, unpinned)..." >&2
+    install_dtp_from_extensions_gnome_org
+  fi
 fi
 
 if ! command -v gnome-extensions >/dev/null 2>&1; then
@@ -1195,6 +1272,10 @@ if gsettings list-schemas | awk '$0=="org.gnome.shell.extensions.dash-to-dock"{f
   gsettings set org.gnome.shell.extensions.dash-to-dock dock-position 'BOTTOM' || true
 fi
 
+# Undo any write-protection from a previous run so this script can patch
+# the files again (e.g. to update settings or re-verify overrides).
+chmod -R u+w "${HOME}/.local/share/gnome-shell/extensions/${DTP_UUID}" 2>/dev/null || true
+
 apply_dtp_stylesheet_overrides
 apply_dtp_code_overrides
 
@@ -1202,9 +1283,25 @@ apply_dtp_code_overrides
 gnome-extensions disable "${DTP_UUID}" >/dev/null 2>&1 || true
 gnome-extensions enable "${DTP_UUID}" >/dev/null 2>&1 || true
 
+# Block GNOME Shell's background extension updater from silently replacing
+# these patched files later (it writes in place; it doesn't ask). This does
+# not affect the extension running — only future writes to this directory.
+DTP_LIVE_PATH="${HOME}/.local/share/gnome-shell/extensions/${DTP_UUID}"
+if [[ -d "${DTP_LIVE_PATH}" ]]; then
+  chmod -R a-w "${DTP_LIVE_PATH}" || true
+fi
+
 echo
 echo "=== DASH TO PANEL SETUP ==="
 echo "Dash to Panel setup complete."
 echo "If the panel does not move to the bottom immediately,"
 echo "FULLY LOG OUT OF YOUR SESSION AND LOG BACK IN."
+echo
+echo "Dash to Panel is pinned to ${DTP_PINNED_VERSION} and its extension"
+echo "directory has been made read-only so GNOME Shell's background updater"
+echo "can't silently overwrite the gnome-prism patches. To deliberately"
+echo "update it later: chmod -R u+w \"${DTP_LIVE_PATH}\", install the new"
+echo "version, re-verify the GNOME_PRISM_* overrides still match its"
+echo "appIcons.js/taskbar.js/panel.js/stylesheet.css, bump DTP_PINNED_VERSION"
+echo "in this script, then re-run it."
 echo

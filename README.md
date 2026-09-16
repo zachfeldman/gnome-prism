@@ -181,6 +181,9 @@ Some apps (especially Snaps and Flatpaks) use hardcoded icon paths. The install 
 **Taskbar icons look misaligned (Fedora):**
 Re-run `./scripts/setup_bottom_panel.sh` after logging in. The Dash to Panel extension needs to be fully loaded before the script can apply all settings.
 
+**Taskbar borders/icon alignment/clock font suddenly look wrong:**
+GNOME Shell's background extension updater can silently replace an already-installed Dash to Panel with a newer version, and a newer version can rename the CSS classes/JS structure the `GNOME_PRISM_*` overrides in `scripts/setup_bottom_panel.sh` target — breaking the taskbar styling with no error logged. `setup_bottom_panel.sh` pins Dash to Panel to a known-good version (`DTP_PINNED_VERSION`) and makes its extension directory read-only after patching, specifically to stop this. If it still happens (e.g. an old install predates this protection), re-run `./scripts/setup_bottom_panel.sh`, then **fully log out and back in** — `gnome-extensions disable`/`enable` alone does not reliably reload an extension's code on Wayland.
+
 ## Screensaver (optional)
 
 GNOME Prism can optionally play a user-selected looping video on GNOME's
