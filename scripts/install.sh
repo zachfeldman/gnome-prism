@@ -170,6 +170,7 @@ FIRMWARE_UPDATER_APP_SNAP_DESKTOP_SRC="${FIRMWARE_UPDATER_APP_SNAP_DESKTOP_SRC:-
 YUBICO_DESKTOP_SRC="${YUBICO_DESKTOP_SRC:-${HOME}/.local/share/applications/com.yubico.yubioath.desktop}"
 CURSOR_SETTINGS_TEMPLATE="${REPO_ROOT}/apps/cursor/gnome-prism-settings.json"
 TILIX_THEME_SCRIPT="${REPO_ROOT}/apps/tilix/install.sh"
+MIXXX_SKIN_SCRIPT="${REPO_ROOT}/apps/mixxx/install.sh"
 GHOSTTY_THEME_SRC="${REPO_ROOT}/apps/ghostty/${THEME_NAME}"
 
 THEME_DEST_LEGACY="${PREFIX}/.themes/${THEME_NAME}"
@@ -655,6 +656,20 @@ if [[ "${PREFIX}" == "${HOME}" ]] && [[ -f "${TILIX_THEME_SCRIPT}" ]]; then
     fi
   else
     echo "Tilix not installed; skipping color scheme setup."
+  fi
+fi
+
+# Optional Mixxx skin: generated from the installed LateNight skin into
+# ~/.mixxx/skins and selected in ~/.mixxx/mixxx.cfg. The script skips itself
+# when Mixxx isn't installed and refuses while Mixxx is running (Mixxx
+# rewrites its config on exit), so a failure here doesn't stop the install.
+if [[ "${PREFIX}" == "${HOME}" ]] && [[ -f "${MIXXX_SKIN_SCRIPT}" ]]; then
+  echo
+  echo "=== MIXXX SKIN ==="
+  if bash "${MIXXX_SKIN_SCRIPT}"; then
+    echo "Applied Mixxx skin."
+  else
+    echo "Warning: Mixxx skin install failed; quit Mixxx and re-run ${MIXXX_SKIN_SCRIPT}." >&2
   fi
 fi
 

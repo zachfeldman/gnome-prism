@@ -1,0 +1,87 @@
+<!--
+  gnome-prism: main/headphone controls as a horizontal toolbar strip.
+  build_skin.py copies this into the skin and inserts it into toolbar.xml, and
+  hides the stock main/headphone mixer column ([Skin],show_main_head_mixer = 0)
+  so the decks and mixer get that width back.
+-->
+<Template>
+  <SetVariable name="BtnType"><Variable name="SubRegion_BtnType"/></SetVariable>
+  <SetVariable name="Group">[Master]</SetVariable>
+  <SetVariable name="KnobBg">main</SetVariable>
+  <SetVariable name="KnobIndicator">main</SetVariable>
+  <!-- Fixed radius: the skin-wide radii are scaled up for the deck area. -->
+  <SetVariable name="ArcRadius">12.5</SetVariable>
+  <SetVariable name="ArcThickness"><Variable name="ArcThicknessBig"/></SetVariable>
+  <SetVariable name="Size">30f,26f</SetVariable>
+
+  <WidgetGroup>
+    <ObjectName>PrismMainHeadToolbar</ObjectName>
+    <SizePolicy>min,min</SizePolicy>
+    <Layout>horizontal</Layout>
+    <Children>
+
+      <Label><ObjectName>KnobLabel</ObjectName><Text>MAIN</Text></Label>
+      <Template src="skin:controls/knob.xml">
+        <SetVariable name="TooltipId">main_gain</SetVariable>
+        <SetVariable name="KnobColor">orange</SetVariable>
+        <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
+        <SetVariable name="ArcUnipolar">true</SetVariable>
+        <SetVariable name="Control">gain</SetVariable>
+      </Template>
+
+      <Label><ObjectName>KnobLabel</ObjectName><Text>BAL</Text></Label>
+      <Template src="skin:controls/knob.xml">
+        <SetVariable name="TooltipId">balance</SetVariable>
+        <SetVariable name="KnobColor">red</SetVariable>
+        <SetVariable name="ArcColor"><Variable name="ArcColorMstBal"/></SetVariable>
+        <SetVariable name="Control">balance</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>12f,1f</Size></WidgetGroup>
+
+      <Label><ObjectName>KnobLabel</ObjectName><Text>HEAD</Text></Label>
+      <Template src="skin:controls/knob.xml">
+        <SetVariable name="TooltipId">headphone_gain</SetVariable>
+        <SetVariable name="KnobColor">orange</SetVariable>
+        <SetVariable name="ArcColor"><Variable name="ArcColorGainLow"/></SetVariable>
+        <SetVariable name="ArcUnipolar">true</SetVariable>
+        <SetVariable name="Control">headGain</SetVariable>
+      </Template>
+
+      <Label><ObjectName>KnobLabel</ObjectName><Text>MIX</Text></Label>
+      <Template src="skin:controls/knob.xml">
+        <SetVariable name="TooltipId">headMix</SetVariable>
+        <SetVariable name="KnobColor">red</SetVariable>
+        <SetVariable name="ArcColor"><Variable name="ArcColorMstBal"/></SetVariable>
+        <SetVariable name="Control">headMix</SetVariable>
+      </Template>
+
+      <WidgetGroup><Size>4f,1f</Size></WidgetGroup>
+
+      <PushButton>
+        <TooltipId>headSplit</TooltipId>
+        <ObjectName>SplitCue</ObjectName>
+        <Size>48f,20f</Size>
+        <NumberStates>2</NumberStates>
+        <RightClickIsPushButton>false</RightClickIsPushButton>
+        <State>
+          <Number>0</Number>
+          <Unpressed scalemode="STRETCH">skin:<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit.svg</Pressed>
+        </State>
+        <State>
+          <Number>1</Number>
+          <Unpressed scalemode="STRETCH">skin:<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Unpressed>
+          <Pressed scalemode="STRETCH">skin:<Variable name="BtnScheme"/>/buttons/btn_<Variable name="BtnType"/>_headsplit_active.svg</Pressed>
+        </State>
+        <Connection>
+          <ConfigKey>[Master],headSplit</ConfigKey>
+          <ButtonState>LeftButton</ButtonState>
+        </Connection>
+      </PushButton>
+
+      <WidgetGroup><Size>12f,1f</Size></WidgetGroup>
+
+    </Children>
+  </WidgetGroup>
+</Template>

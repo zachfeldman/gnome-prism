@@ -1,0 +1,97 @@
+/* gnome-prism overrides, appended to LateNight's style_palemoon.qss by
+ * build_skin.py. Tokens: bg #000000, surface #191919, stroke #BDA7F0,
+ * highlight #FF7447. */
+
+/* Selection: lavender fill, black text (theme_selected_bg/fg_color). */
+WTrackTableView,
+WLibrarySidebar,
+QTreeView,
+QTableView,
+QListView {
+  selection-background-color: #BDA7F0;
+  selection-color: #000000;
+}
+
+WLibrarySidebar::item:selected,
+WTrackTableView::item:selected,
+#LibraryBPMButton::item:selected,
+#LibraryPlayedCheckbox::item:selected {
+  background-color: #BDA7F0;
+  color: #000000;
+}
+
+/* Library: black rows, faint surface stripe. */
+WTrackTableView,
+WLibrarySidebar {
+  background-color: #000000;
+  alternate-background-color: #0c0b10;
+  color: #BDA7F0;
+}
+
+WTrackTableView QHeaderView::section {
+  background-color: #000000;
+  color: #BDA7F0;
+  border: none;
+  border-bottom: 1px solid #BDA7F0;
+}
+
+/* Search box: 1px lavender border like GTK entries. */
+WSearchLineEdit {
+  background-color: #000000;
+  color: #BDA7F0;
+  border: 1px solid #BDA7F0;
+}
+
+/* Menus and tooltips. */
+QMenu,
+QToolTip {
+  background-color: #000000;
+  color: #BDA7F0;
+  border: 1px solid #BDA7F0;
+}
+
+QMenu::item:selected {
+  background-color: #BDA7F0;
+  color: #000000;
+}
+
+/* Lavender scroll handles on black. */
+QScrollBar {
+  background-color: #000000;
+}
+
+QScrollBar::handle {
+  background-color: #6f6290;
+  border: none;
+}
+
+QScrollBar::handle:hover {
+  background-color: #BDA7F0;
+}
+
+/* Monospace runs wider than LateNight's Open Sans: shrink toolbar text so
+   labels like SETTINGS / ON AIR fit their fixed-width buttons. */
+#ToolBar WPushButton,
+#ToolBar WLabel {
+  font-size: 9px;
+}
+
+/* Main/headphone strip moved into the toolbar (main_head_toolbar.xml). */
+#PrismMainHeadToolbar #KnobLabel {
+  padding: 0px 2px 0px 6px;
+}
+
+/* Shorter, lighter search box. */
+WSearchLineEdit {
+  font-size: 12px;
+  padding: 0px 4px;
+  min-height: 22px;
+  max-height: 22px;
+}
+
+/* Deck track title/artist: monospace runs wide, so keep these below the
+   scaled-up deck text (stock 18px x FONT_SCALE). */
+#TitleText,
+#ArtistText {
+  font-size: 15px;
+}

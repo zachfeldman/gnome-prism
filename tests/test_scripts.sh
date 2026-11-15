@@ -9,6 +9,8 @@ FIREFOX_USERCHROME_SCRIPT="${REPO_ROOT}/scripts/apply_firefox_userchrome.sh"
 VIVALDI_THEME_SCRIPT="${REPO_ROOT}/scripts/apply_vivaldi_theme.sh"
 SCREENSAVER_SCRIPT="${REPO_ROOT}/scripts/install_screensaver.sh"
 SCREENSAVER_UUID="gnome-prism-screensaver@zachfeldman"
+MIXXX_SKIN_SCRIPT="${REPO_ROOT}/apps/mixxx/install.sh"
+MIXXX_BUILD_SCRIPT="${REPO_ROOT}/apps/mixxx/build_skin.py"
 
 tmpdir="$(mktemp -d)"
 cleanup() {
@@ -23,6 +25,26 @@ bash -n "${BOTTOM_PANEL_SCRIPT}"
 bash -n "${FIREFOX_USERCHROME_SCRIPT}"
 bash -n "${VIVALDI_THEME_SCRIPT}"
 bash -n "${SCREENSAVER_SCRIPT}"
+bash -n "${MIXXX_SKIN_SCRIPT}"
+
+if [[ -f /usr/share/mixxx/skins/LateNight/skin.xml ]]; then
+  echo "Building the Mixxx skin into a temp dir..."
+  python3 "${MIXXX_BUILD_SCRIPT}" --dest "${tmpdir}/mixxx-skin" >/dev/null
+  python3 - <<'PY' "${tmpdir}/mixxx-skin"
+import pathlib
+import sys
+import xml.dom.minidom
+
+skin = pathlib.Path(sys.argv[1])
+for name in ("skin.xml", "toolbar.xml", "main_head_toolbar.xml", "decks/deck.xml"):
+    xml.dom.minidom.parse(str(skin / name))
+assert "<Name>Prism</Name>" in (skin / "skin.xml").read_text()
+assert "skins:LateNight/" not in (skin / "decks/deck.xml").read_text()
+assert 'src="skin:main_head_toolbar.xml"' in (skin / "toolbar.xml").read_text()
+PY
+else
+  echo "Mixxx LateNight skin not installed; skipping skin build check."
+fi
 
 if command -v shellcheck >/dev/null 2>&1; then
   echo "Running shellcheck on install_screensaver.sh..."

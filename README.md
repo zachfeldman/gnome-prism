@@ -132,6 +132,14 @@ theme = gnome-prism
 Ghostty reads its config at startup; press `ctrl+shift+,` to reload it in place.
 The colors are the same tokens as the Tilix scheme, so both terminals match.
 
+### Mixxx
+
+The install script generates a gnome-prism skin from Mixxx's stock LateNight
+skin into `~/.mixxx/skins/gnome-prism` and selects it, with larger touch
+targets and a decluttered deck layout. Quit Mixxx first (it rewrites its config
+on exit), or run `apps/mixxx/install.sh` on its own later. See
+[`apps/mixxx/README.md`](apps/mixxx/README.md).
+
 ### Vivaldi
 
 ```bash
@@ -152,7 +160,7 @@ The icon theme ships overrides for 100+ applications as SVG (scalable) and PNG (
 - Browsers: Firefox, Chrome, Chromium, Vivaldi
 - Terminals: GNOME Terminal, Tilix, Ptyxis, Ghostty
 - Dev tools: Cursor, VS Code, Sublime Text, btop, htop
-- Media: Spotify, VLC, Rhythmbox, Tenacity
+- Media: Spotify, VLC, Rhythmbox, Tenacity, Mixxx
 - Productivity: LibreOffice (Writer, Calc, Impress, Draw), Evince, Shotwell
 - Comms: Signal, Thunderbird
 - Utilities: 1Password, Yubico Authenticator, Steam, Transmission, Remmina

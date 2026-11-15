@@ -52,6 +52,8 @@ DM_MONO_DIR="${PREFIX}/.local/share/fonts/DMMono"
 GTK4_OVERRIDE_DEST="${PREFIX}/.config/gtk-4.0/gtk.css"
 GHOSTTY_THEME_DEST="${PREFIX}/.config/ghostty/themes/${THEME_NAME}"
 GHOSTTY_CONFIG_DEST="${PREFIX}/.config/ghostty/config"
+MIXXX_SKIN_DEST="${PREFIX}/.mixxx/skins/${THEME_NAME}"
+MIXXX_CONFIG_DEST="${PREFIX}/.mixxx/mixxx.cfg"
 SCREENSAVER_UUID="gnome-prism-screensaver@zachfeldman"
 SCREENSAVER_DEST="${PREFIX}/.local/share/gnome-shell/extensions/${SCREENSAVER_UUID}"
 
@@ -88,6 +90,26 @@ name = re.escape(sys.argv[2])
 text = path.read_text(encoding="utf-8")
 text = re.sub(rf"(?:\n# Installed by gnome-prism\.)?\n\s*theme\s*=\s*{name}\s*(?=\n|$)", "", text)
 path.write_text(text, encoding="utf-8")
+PY
+fi
+
+# Mixxx skin: remove it and point Mixxx back at stock LateNight if it was
+# selected. Skip the config edit while Mixxx runs, since it rewrites the file
+# on exit (it falls back to its default skin when the selected one is gone).
+rm -rf "${MIXXX_SKIN_DEST}"
+if [[ -f "${MIXXX_CONFIG_DEST}" ]] && ! pgrep -x mixxx >/dev/null && command -v python3 >/dev/null 2>&1; then
+  python3 - <<'PY' "${MIXXX_CONFIG_DEST}" "${THEME_NAME}"
+import pathlib
+import re
+import sys
+
+path = pathlib.Path(sys.argv[1])
+name = re.escape(sys.argv[2])
+text = path.read_text(encoding="utf-8")
+if re.search(rf"^ResizableSkin {name}$", text, flags=re.M):
+    text = re.sub(rf"^ResizableSkin {name}$", "ResizableSkin LateNight", text, flags=re.M)
+    text = re.sub(r"^Scheme Prism$", "Scheme PaleMoon", text, flags=re.M)
+    path.write_text(text, encoding="utf-8")
 PY
 fi
 fc-cache -f "${PREFIX}/.local/share/fonts" 2>/dev/null || true
@@ -127,4 +149,5 @@ echo "  ${YUBICO_DESKTOP_DEST}"
 echo "  ${DM_MONO_DIR}"
 echo "  ${GTK4_OVERRIDE_DEST}"
 echo "  ${GHOSTTY_THEME_DEST}"
+echo "  ${MIXXX_SKIN_DEST}"
 echo "  ${SCREENSAVER_DEST}"
