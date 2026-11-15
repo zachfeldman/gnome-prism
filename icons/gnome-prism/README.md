@@ -20,6 +20,7 @@ This icon theme inherits from `Adwaita` and ships custom overrides.
 - `firefox_firefox.svg`
 - `code.svg`
 - `vlc.svg`
+- `mixxx.svg` (+ `org.mixxx.Mixxx.svg` alias)
 - `google-chrome.png` (+ aliases for Chromium/Chrome desktop IDs)
 - `sublime_text.png`
 - `1password.png`
